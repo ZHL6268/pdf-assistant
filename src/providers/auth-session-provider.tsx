@@ -25,6 +25,25 @@ interface AuthSessionContextValue {
 }
 
 const AuthSessionContext = createContext<AuthSessionContextValue | null>(null);
+const AUTH_REQUEST_TIMEOUT_MS = 10000;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMessage: string): Promise<T> {
+  let timeoutId: number | null = null;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, AUTH_REQUEST_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutId !== null) {
+      window.clearTimeout(timeoutId);
+    }
+  }
+}
 
 function mapSupabaseUser(user: User): AuthUser {
   return {
@@ -64,8 +83,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
     let isMounted = true;
 
-    supabase.auth
-      .getSession()
+    withTimeout(supabase.auth.getSession(), 'Auth session check timed out. Refresh the page and try again.')
       .then(async ({ data, error }) => {
         if (!isMounted) {
           return;
@@ -129,10 +147,13 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
         setAuthError(null);
         setAuthNotice(null);
-        const { error } = await supabase.auth.signInWithPassword({
-          email: input.email,
-          password: input.password,
-        });
+        const { error } = await withTimeout(
+          supabase.auth.signInWithPassword({
+            email: input.email,
+            password: input.password,
+          }),
+          'Login timed out. Check your network and Supabase configuration, then try again.',
+        );
 
         if (error) {
           setAuthError(error.message);
@@ -149,15 +170,18 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
         setAuthError(null);
         setAuthNotice(null);
-        const { error } = await supabase.auth.signUp({
-          email: input.email,
-          password: input.password,
-          options: {
-            data: {
-              full_name: input.fullName?.trim() || input.email.split('@')[0] || 'Workspace User',
+        const { error } = await withTimeout(
+          supabase.auth.signUp({
+            email: input.email,
+            password: input.password,
+            options: {
+              data: {
+                full_name: input.fullName?.trim() || input.email.split('@')[0] || 'Workspace User',
+              },
             },
-          },
-        });
+          }),
+          'Signup timed out. Check your network and Supabase configuration, then try again.',
+        );
 
         if (error) {
           setAuthError(error.message);
@@ -173,7 +197,10 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           return false;
         }
 
-        const { error } = await supabase.auth.signOut();
+        const { error } = await withTimeout(
+          supabase.auth.signOut(),
+          'Logout timed out. Check your network and try again.',
+        );
         if (error) {
           setAuthError(error.message);
           return false;
