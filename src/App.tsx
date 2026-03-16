@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   FileText,
   LayoutDashboard,
@@ -18,7 +18,6 @@ import {
   Cloud,
   AlertTriangle,
   LogOut,
-  HelpCircle,
   Eye,
   ArrowRight,
   PlayCircle,
@@ -29,8 +28,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { APP_NAME, MAX_UPLOAD_SIZE_MB } from './constants/app';
-
-type Screen = 'landing' | 'login' | 'dashboard' | 'detail';
+import { useAppScreen } from './hooks/use-app-screen';
 
 const LandingPage = ({ onGetStarted }: { onGetStarted: () => void }) => {
   return (
@@ -656,7 +654,7 @@ const ChatMessage = ({ isAi, text, time }: { isAi?: boolean, text: React.ReactNo
 );
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('landing');
+  const { screen, setScreen } = useAppScreen();
 
   return (
     <AnimatePresence mode="wait">

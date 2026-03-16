@@ -29,9 +29,12 @@
 - `src/config/env.ts`
 - `src/constants/app.ts`
 - `src/types/api.ts`
-- `src/utils/format.ts`
-- UI 组件接入共享常量和路由定义
+- 原始 UI 接入关键共享常量
 - `.env.example` 更新为当前项目约定
+
+## 当前状态备注
+
+第一阶段的共享基础已完成，但在后续清洁过程中已删除未被运行入口使用的实验性 UI 模块和工具文件，避免仓库继续累积死代码。
 
 ## 非目标
 

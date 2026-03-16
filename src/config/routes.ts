@@ -1,20 +1,44 @@
-import type { AppScreen, AuthMode } from '../types/app';
+export type AppScreen = 'landing' | 'login' | 'dashboard' | 'detail';
 
 export interface AppRoute {
-  id: AppScreen;
   path: string;
+  screen: AppScreen;
   label: string;
   isProtected: boolean;
 }
 
-export const appRoutes: Record<AppScreen, AppRoute> = {
-  landing: { id: 'landing', path: '/', label: 'Landing', isProtected: false },
-  login: { id: 'login', path: '/login', label: 'Login', isProtected: false },
-  signup: { id: 'signup', path: '/signup', label: 'Sign up', isProtected: false },
-  dashboard: { id: 'dashboard', path: '/dashboard', label: 'Dashboard', isProtected: true },
-  document: { id: 'document', path: '/documents/[id]', label: 'Document detail', isProtected: true },
-};
+export const appRoutes = {
+  landing: {
+    path: '/',
+    screen: 'landing',
+    label: 'Landing',
+    isProtected: false,
+  },
+  login: {
+    path: '/login',
+    screen: 'login',
+    label: 'Login',
+    isProtected: false,
+  },
+  dashboard: {
+    path: '/dashboard',
+    screen: 'dashboard',
+    label: 'Dashboard',
+    isProtected: true,
+  },
+  detail: {
+    path: '/documents/demo',
+    screen: 'detail',
+    label: 'Document Detail',
+    isProtected: true,
+  },
+} satisfies Record<AppScreen, AppRoute>;
 
-export function getAuthScreen(mode: AuthMode): AppScreen {
-  return mode;
+export function getPathForScreen(screen: AppScreen): string {
+  return appRoutes[screen].path;
+}
+
+export function getScreenForPath(pathname: string): AppScreen {
+  const matchedRoute = Object.values(appRoutes).find((route) => route.path === pathname);
+  return matchedRoute?.screen ?? 'landing';
 }

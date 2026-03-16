@@ -34,7 +34,7 @@
 - Vercel
   - 适合承载 Next.js 应用部署与演示环境
 
-当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已经开始补齐共享配置、环境变量约定和 API 边界占位，为后续接入真实服务做准备。当前展示层为了保持原始视觉效果，仍由 `src/App.tsx` 承载主页面布局；共享配置和类型层已经先独立落地，后续再逐步拆分接入。
+当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位。第二阶段正在继续清理冗余代码，并把页面状态与共享路径配置接起来。当前展示层为了保持原始视觉效果，仍由 `src/App.tsx` 承载主页面布局；共享配置和类型层已经先独立落地，后续再逐步拆分接入。
 
 ## 项目目录结构
 
@@ -46,6 +46,7 @@ ai-pdf-assistant/
 │   ├── architecture.md
 │   ├── frontend-baseline.md
 │   ├── phase-1-plan.md
+│   ├── phase-2-plan.md
 │   └── prd.md
 ├── src/
 │   ├── config/
@@ -53,19 +54,11 @@ ai-pdf-assistant/
 │   │   └── routes.ts
 │   ├── constants/
 │   │   └── app.ts
-│   ├── components/
-│   │   ├── app-logo.tsx
-│   │   ├── auth-page.tsx
-│   │   ├── dashboard-page.tsx
-│   │   ├── document-detail-page.tsx
-│   │   └── landing-page.tsx
-│   ├── data/
-│   │   └── mock-data.ts
+│   ├── hooks/
+│   │   └── use-app-screen.ts
 │   ├── types/
-│   │   ├── api.ts
-│   │   └── app.ts
-│   ├── utils/
-│   │   └── format.ts
+│   │   └── api.ts
+│   ├── vite-env.d.ts
 │   ├── App.tsx
 │   ├── index.css
 │   └── main.tsx

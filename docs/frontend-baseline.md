@@ -17,16 +17,16 @@ This document captures how the current frontend has been aligned to the supplied
 
 ## Engineering adjustments
 
-- Shared types moved into `src/types/app.ts`
 - API boundary placeholders added under `src/types/api.ts`
 - Route and environment conventions added under `src/config`
 - App-wide constants added under `src/constants`
+- Page state and browser path syncing added under `src/hooks/use-app-screen.ts`
 - `App.tsx` preserves the original Tailwind-driven layout while selectively consuming shared constants
 - `src/index.css` remains minimal so the original Tailwind utility layout renders unchanged
 
 ## Explicit non-goals
 
-- No real routing
+- No third-party router integration
 - No Supabase integration
 - No OpenAI integration
 - No PDF parsing
@@ -35,9 +35,9 @@ This document captures how the current frontend has been aligned to the supplied
 
 ## Current phase
 
-The project has now entered Phase 1 engineering setup:
+The project has now entered Phase 2 app-shell cleanup:
 
-- establish shared route definitions
-- establish environment variable conventions
-- define API request and response placeholders
-- reduce key UI hardcoding for product constants and constraints without changing the original page layout
+- preserve the original single-file visual baseline
+- keep shared engineering foundations in separate modules
+- remove dead UI modules left over from earlier refactors
+- drive page transitions from shared route configuration
