@@ -114,7 +114,7 @@ export function AuthPage({
               <button
                 className="w-full py-3 px-4 bg-[#0d33f2] text-white rounded-lg font-bold text-sm tracking-wide hover:bg-[#0d33f2]/90 transition-all shadow-lg shadow-[#0d33f2]/20 disabled:opacity-70"
                 type="submit"
-                disabled={isSubmitting || !isAuthReady}
+                disabled={isSubmitting}
               >
                 {isSubmitting ? 'Working...' : isSignup ? 'Create Account' : 'Log In'}
               </button>
