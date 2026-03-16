@@ -8,6 +8,7 @@ import type { LoginInput } from '../types/auth';
 export function AuthPage({
   mode,
   authError,
+  authNotice,
   isAuthReady,
   isSupabaseReady,
   onAuthenticate,
@@ -15,6 +16,7 @@ export function AuthPage({
 }: {
   mode: 'login' | 'signup';
   authError: string | null;
+  authNotice: string | null;
   isAuthReady: boolean;
   isSupabaseReady: boolean;
   onAuthenticate: (mode: 'login' | 'signup', input: LoginInput) => Promise<void>;
@@ -117,6 +119,7 @@ export function AuthPage({
                   Supabase credentials are missing. Add environment variables before testing real auth.
                 </p>
               ) : null}
+              {authNotice ? <p className="text-xs text-green-600">{authNotice}</p> : null}
               {authError ? <p className="text-xs text-red-600">{authError}</p> : null}
             </form>
           </div>

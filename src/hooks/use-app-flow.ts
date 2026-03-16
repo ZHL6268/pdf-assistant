@@ -20,13 +20,14 @@ export interface AppFlowState {
   screen: AppScreen;
   isAuthReady: boolean;
   authError: string | null;
+  authNotice: string | null;
   isSupabaseReady: boolean;
   actions: AppFlowActions;
 }
 
 export function useAppFlow(): AppFlowState {
   const { screen, setScreen } = useAppScreen();
-  const { isAuthenticated, isAuthReady, isSupabaseReady, authError, signIn, signUp, logout, clearAuthError } =
+  const { isAuthenticated, isAuthReady, isSupabaseReady, authError, authNotice, signIn, signUp, logout, clearAuthError } =
     useAuthSession();
   const { intentScreen, setIntentScreen } = useAuthIntent();
 
@@ -51,6 +52,7 @@ export function useAppFlow(): AppFlowState {
     screen,
     isAuthReady,
     authError,
+    authNotice,
     isSupabaseReady,
     actions: {
       openLogin: () => {

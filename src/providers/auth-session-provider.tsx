@@ -8,6 +8,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { getSupabaseBrowserClient, isSupabaseConfigured } from '../lib/supabase/client';
+import { fetchUserProfile } from '../services/profile-service';
 import type { AuthSession, AuthUser, LoginInput } from '../types/auth';
 
 interface AuthSessionContextValue {
@@ -15,6 +16,7 @@ interface AuthSessionContextValue {
   isAuthReady: boolean;
   isSupabaseReady: boolean;
   authError: string | null;
+  authNotice: string | null;
   user: AuthUser | null;
   signIn: (input: LoginInput) => Promise<boolean>;
   signUp: (input: LoginInput) => Promise<boolean>;
@@ -48,6 +50,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authNotice, setAuthNotice] = useState<string | null>(null);
   const supabase = getSupabaseBrowserClient();
   const isSupabaseReady = isSupabaseConfigured();
 
@@ -63,7 +66,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
     supabase.auth
       .getSession()
-      .then(({ data, error }) => {
+      .then(async ({ data, error }) => {
         if (!isMounted) {
           return;
         }
@@ -72,7 +75,13 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           setAuthError(error.message);
           setSession(null);
         } else {
-          setSession(mapSession(data.session));
+          const mappedSession = mapSession(data.session);
+          if (mappedSession) {
+            const profileBackedUser = await fetchUserProfile(supabase, mappedSession.user);
+            setSession({ user: profileBackedUser });
+          } else {
+            setSession(null);
+          }
         }
 
         setIsAuthReady(true);
@@ -86,8 +95,15 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
         setIsAuthReady(true);
       });
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(mapSession(nextSession));
+    const { data } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+      const mappedSession = mapSession(nextSession);
+      if (mappedSession) {
+        const profileBackedUser = await fetchUserProfile(supabase, mappedSession.user);
+        setSession({ user: profileBackedUser });
+      } else {
+        setSession(null);
+      }
+
       setIsAuthReady(true);
     });
 
@@ -103,6 +119,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       isAuthReady,
       isSupabaseReady,
       authError,
+      authNotice,
       user: session?.user ?? null,
       signIn: async (input) => {
         if (!supabase) {
@@ -111,6 +128,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
         }
 
         setAuthError(null);
+        setAuthNotice(null);
         const { error } = await supabase.auth.signInWithPassword({
           email: input.email,
           password: input.password,
@@ -130,6 +148,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
         }
 
         setAuthError(null);
+        setAuthNotice(null);
         const { error } = await supabase.auth.signUp({
           email: input.email,
           password: input.password,
@@ -145,6 +164,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           return false;
         }
 
+        setAuthNotice('Account created. If email confirmation is enabled, confirm your email before signing in.');
         return true;
       },
       logout: async () => {
@@ -160,7 +180,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       },
       clearAuthError: () => setAuthError(null),
     }),
-    [authError, isAuthReady, isSupabaseReady, session, supabase],
+    [authError, authNotice, isAuthReady, isSupabaseReady, session, supabase],
   );
 
   return <AuthSessionContext.Provider value={value}>{children}</AuthSessionContext.Provider>;

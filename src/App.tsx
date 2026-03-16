@@ -6,7 +6,7 @@ import { DocumentDetailPage } from './screens/document-detail-page';
 import { LandingPage } from './screens/landing-page';
 
 export default function App() {
-  const { screen, isAuthReady, authError, isSupabaseReady, actions } = useAppFlow();
+  const { screen, isAuthReady, authError, authNotice, isSupabaseReady, actions } = useAppFlow();
 
   return (
     <AnimatePresence mode="wait">
@@ -21,6 +21,7 @@ export default function App() {
           <AuthPage
             mode={screen}
             authError={authError}
+            authNotice={authNotice}
             isAuthReady={isAuthReady}
             isSupabaseReady={isSupabaseReady}
             onAuthenticate={actions.completeAuth}

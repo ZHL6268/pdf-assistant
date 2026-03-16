@@ -29,6 +29,7 @@
 5. 建立用户资料自动同步
    - 注册成功后自动写入 `profiles`
    - 避免后续 documents / messages 外键因缺少 profile 而失败
+   - 登录后优先从 `profiles` 读取资料，而不是只依赖 auth metadata
 
 ## 非目标
 
