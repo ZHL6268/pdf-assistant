@@ -16,6 +16,16 @@ export interface ApiResponse<T> {
   error: ApiError | null;
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  userId: string;
+  email: string;
+}
+
 export interface UploadDocumentRequest {
   fileName: string;
   fileSize: number;

@@ -5,3 +5,5 @@ export const APP_TAGLINE = 'AI document workspace for PDF upload, summary, and g
 export const MAX_UPLOAD_SIZE_MB = 50;
 
 export const SUPPORTED_FILE_TYPES = ['application/pdf'] as const;
+
+export const AUTH_SESSION_STORAGE_KEY = 'ai-pdf-assistant.auth-session';

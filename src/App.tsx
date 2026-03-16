@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   FileText,
   LayoutDashboard,
@@ -27,8 +27,11 @@ import {
   Linkedin,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { appRoutes } from './config/routes';
 import { APP_NAME, MAX_UPLOAD_SIZE_MB } from './constants/app';
 import { useAppScreen } from './hooks/use-app-screen';
+import { useAuthSession } from './hooks/use-auth-session';
+import type { LoginInput } from './types/auth';
 
 const LandingPage = ({ onGetStarted }: { onGetStarted: () => void }) => {
   return (
@@ -260,7 +263,7 @@ const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, titl
   </div>
 );
 
-const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
+const LoginPage = ({ onLogin }: { onLogin: (input: LoginInput) => void }) => {
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-slate-900 font-sans flex flex-col">
       <header className="flex items-center justify-between border-b border-slate-200 px-6 lg:px-10 py-3 bg-white">
@@ -304,10 +307,20 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
               </div>
             </div>
 
-            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+            <form
+              className="space-y-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                onLogin({
+                  email: String(formData.get('email') ?? ''),
+                  password: String(formData.get('password') ?? ''),
+                });
+              }}
+            >
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Email address</label>
-                <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="name@company.com" type="email" required />
+                <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="name@company.com" type="email" name="email" defaultValue="alex@company.com" required />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -315,7 +328,7 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
                   <a className="text-xs font-semibold text-[#0d33f2] hover:underline" href="#">Forgot password?</a>
                 </div>
                 <div className="relative">
-                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Enter your password" type="password" required />
+                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Enter your password" type="password" name="password" defaultValue="demo-password" required />
                   <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" type="button">
                     <Eye size={20} />
                   </button>
@@ -349,7 +362,15 @@ const LoginPage = ({ onLogin }: { onLogin: () => void }) => {
   );
 };
 
-const Dashboard = ({ onSelectDoc, onLogout }: { onSelectDoc: () => void, onLogout: () => void }) => {
+const Dashboard = ({
+  onSelectDoc,
+  onLogout,
+  userName,
+}: {
+  onSelectDoc: () => void;
+  onLogout: () => void;
+  userName: string;
+}) => {
   return (
     <div className="flex h-screen overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">
       <aside className="w-64 flex-shrink-0 border-r border-slate-200 bg-white hidden md:flex flex-col">
@@ -404,7 +425,7 @@ const Dashboard = ({ onSelectDoc, onLogout }: { onSelectDoc: () => void, onLogou
             <div className="h-8 w-px bg-slate-200 mx-2"></div>
             <div className="flex items-center gap-3 cursor-pointer group">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-900 leading-none">Alex Rivera</p>
+                <p className="text-sm font-semibold text-slate-900 leading-none">{userName}</p>
                 <p className="text-xs text-slate-500 mt-1">Premium Plan</p>
               </div>
               <div className="size-10 rounded-full bg-[#0d33f2]/20 flex items-center justify-center overflow-hidden border-2 border-[#0d33f2]/10 group-hover:border-[#0d33f2]/40 transition-all">
@@ -655,6 +676,19 @@ const ChatMessage = ({ isAi, text, time }: { isAi?: boolean, text: React.ReactNo
 
 export default function App() {
   const { screen, setScreen } = useAppScreen();
+  const { isAuthenticated, user, login, logout } = useAuthSession();
+
+  useEffect(() => {
+    if (!isAuthenticated && appRoutes[screen].isProtected) {
+      setScreen('login');
+    }
+  }, [isAuthenticated, screen, setScreen]);
+
+  useEffect(() => {
+    if (isAuthenticated && (screen === 'landing' || screen === 'login')) {
+      setScreen('dashboard');
+    }
+  }, [isAuthenticated, screen, setScreen]);
 
   return (
     <AnimatePresence mode="wait">
@@ -665,12 +699,24 @@ export default function App() {
       )}
       {screen === 'login' && (
         <motion.div key="login" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <LoginPage onLogin={() => setScreen('dashboard')} />
+          <LoginPage
+            onLogin={(input) => {
+              login(input);
+              setScreen('dashboard');
+            }}
+          />
         </motion.div>
       )}
       {screen === 'dashboard' && (
         <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <Dashboard onSelectDoc={() => setScreen('detail')} onLogout={() => setScreen('landing')} />
+          <Dashboard
+            onSelectDoc={() => setScreen('detail')}
+            onLogout={() => {
+              logout();
+              setScreen('landing');
+            }}
+            userName={user?.fullName || 'Workspace User'}
+          />
         </motion.div>
       )}
       {screen === 'detail' && (
