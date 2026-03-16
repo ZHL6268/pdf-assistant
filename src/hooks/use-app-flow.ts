@@ -10,25 +10,30 @@ interface AppFlowActions {
   openLogin: () => void;
   openSignup: () => void;
   switchAuthMode: (nextScreen: 'login' | 'signup') => void;
-  completeLogin: (input: LoginInput) => void;
+  completeAuth: (mode: 'login' | 'signup', input: LoginInput) => Promise<void>;
   openDocumentDetail: () => void;
   returnToDashboard: () => void;
-  logoutToLanding: () => void;
+  logoutToLanding: () => Promise<void>;
 }
 
 export interface AppFlowState {
   screen: AppScreen;
+  isAuthReady: boolean;
+  authError: string | null;
+  isSupabaseReady: boolean;
   actions: AppFlowActions;
 }
 
 export function useAppFlow(): AppFlowState {
   const { screen, setScreen } = useAppScreen();
-  const { isAuthenticated, user, login, logout } = useAuthSession();
+  const { isAuthenticated, isAuthReady, isSupabaseReady, authError, signIn, signUp, logout, clearAuthError } =
+    useAuthSession();
   const { intentScreen, setIntentScreen } = useAuthIntent();
 
   useDocumentTitle(screen);
 
   useEffect(() => {
+    // Protected screens are still controlled from the shell until router migration lands.
     if (!isAuthenticated && appRoutes[screen].isProtected) {
       setIntentScreen(screen);
       setScreen('login');
@@ -44,18 +49,31 @@ export function useAppFlow(): AppFlowState {
 
   return {
     screen,
+    isAuthReady,
+    authError,
+    isSupabaseReady,
     actions: {
-      openLogin: () => setScreen('login'),
-      openSignup: () => setScreen('signup'),
-      switchAuthMode: (nextScreen) => setScreen(nextScreen),
-      completeLogin: (input) => {
-        login(input);
-        setScreen('dashboard');
+      openLogin: () => {
+        clearAuthError();
+        setScreen('login');
+      },
+      openSignup: () => {
+        clearAuthError();
+        setScreen('signup');
+      },
+      switchAuthMode: (nextScreen) => {
+        clearAuthError();
+        setScreen(nextScreen);
+      },
+      completeAuth: async (mode, input) => {
+        await (mode === 'signup' ? signUp(input) : signIn(input));
       },
       openDocumentDetail: () => setScreen('detail'),
       returnToDashboard: () => setScreen('dashboard'),
-      logoutToLanding: () => {
-        logout();
+      logoutToLanding: async () => {
+        await logout();
+        clearAuthError();
+        setIntentScreen(null);
         setScreen('landing');
       },
     },

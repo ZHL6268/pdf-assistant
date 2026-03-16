@@ -3,6 +3,7 @@ export interface AppEnv {
   apiBaseUrl: string;
   supabaseUrl: string;
   supabaseAnonKey: string;
+  supabaseProjectId: string;
   openAiModel: string;
 }
 
@@ -16,5 +17,6 @@ export const appEnv: AppEnv = {
   apiBaseUrl: readEnvValue('VITE_API_BASE_URL'),
   supabaseUrl: readEnvValue('VITE_SUPABASE_URL'),
   supabaseAnonKey: readEnvValue('VITE_SUPABASE_ANON_KEY'),
+  supabaseProjectId: readEnvValue('VITE_SUPABASE_PROJECT_ID'),
   openAiModel: readEnvValue('VITE_OPENAI_MODEL') || 'gpt-4.1-mini',
 };

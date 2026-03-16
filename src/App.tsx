@@ -6,7 +6,7 @@ import { DocumentDetailPage } from './screens/document-detail-page';
 import { LandingPage } from './screens/landing-page';
 
 export default function App() {
-  const { screen, actions } = useAppFlow();
+  const { screen, isAuthReady, authError, isSupabaseReady, actions } = useAppFlow();
 
   return (
     <AnimatePresence mode="wait">
@@ -18,13 +18,20 @@ export default function App() {
 
       {screen === 'login' || screen === 'signup' ? (
         <motion.div key={screen} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <AuthPage mode={screen} onLogin={actions.completeLogin} onSwitchMode={actions.switchAuthMode} />
+          <AuthPage
+            mode={screen}
+            authError={authError}
+            isAuthReady={isAuthReady}
+            isSupabaseReady={isSupabaseReady}
+            onAuthenticate={actions.completeAuth}
+            onSwitchMode={actions.switchAuthMode}
+          />
         </motion.div>
       ) : null}
 
       {screen === 'dashboard' ? (
         <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <DashboardPage onSelectDoc={actions.openDocumentDetail} onLogout={actions.logoutToLanding} />
+          <DashboardPage onSelectDoc={actions.openDocumentDetail} onLogout={() => void actions.logoutToLanding()} />
         </motion.div>
       ) : null}
 

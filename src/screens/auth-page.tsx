@@ -1,4 +1,5 @@
 import { Eye, FileText } from 'lucide-react';
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { PlaceholderButton } from '../components/placeholder-button';
 import { APP_NAME } from '../constants/app';
@@ -6,14 +7,21 @@ import type { LoginInput } from '../types/auth';
 
 export function AuthPage({
   mode,
-  onLogin,
+  authError,
+  isAuthReady,
+  isSupabaseReady,
+  onAuthenticate,
   onSwitchMode,
 }: {
   mode: 'login' | 'signup';
-  onLogin: (input: LoginInput) => void;
+  authError: string | null;
+  isAuthReady: boolean;
+  isSupabaseReady: boolean;
+  onAuthenticate: (mode: 'login' | 'signup', input: LoginInput) => Promise<void>;
   onSwitchMode: (screen: 'login' | 'signup') => void;
 }) {
   const isSignup = mode === 'signup';
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-slate-900 font-sans flex flex-col">
@@ -64,14 +72,19 @@ export function AuthPage({
 
             <form
               className="space-y-5"
-              onSubmit={(event) => {
+              onSubmit={async (event) => {
                 event.preventDefault();
                 const formData = new FormData(event.currentTarget);
-                onLogin({
-                  email: String(formData.get('email') ?? ''),
-                  password: String(formData.get('password') ?? ''),
-                  fullName: String(formData.get('fullName') ?? ''),
-                });
+                setIsSubmitting(true);
+                try {
+                  await onAuthenticate(mode, {
+                    email: String(formData.get('email') ?? ''),
+                    password: String(formData.get('password') ?? ''),
+                    fullName: String(formData.get('fullName') ?? ''),
+                  });
+                } finally {
+                  setIsSubmitting(false);
+                }
               }}
             >
               <div className="space-y-2">
@@ -97,8 +110,14 @@ export function AuthPage({
                 </div>
               </div>
               <button className="w-full py-3 px-4 bg-[#0d33f2] text-white rounded-lg font-bold text-sm tracking-wide hover:bg-[#0d33f2]/90 transition-all shadow-lg shadow-[#0d33f2]/20" type="submit">
-                {isSignup ? 'Create Account' : 'Log In'}
+                {!isAuthReady || isSubmitting ? 'Working...' : isSignup ? 'Create Account' : 'Log In'}
               </button>
+              {!isSupabaseReady ? (
+                <p className="text-xs text-amber-600">
+                  Supabase credentials are missing. Add environment variables before testing real auth.
+                </p>
+              ) : null}
+              {authError ? <p className="text-xs text-red-600">{authError}</p> : null}
             </form>
           </div>
 

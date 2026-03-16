@@ -62,3 +62,12 @@ Phase 3 document-management frontend MVP is complete:
 - synchronize the active document between dashboard and detail page
 - keep the browser title aligned with the active document while on detail
 - keep the existing visual baseline unchanged while making the workflow testable
+
+## Phase 4 Start
+
+The project has now entered Phase 4 real-auth and database baseline:
+
+- replace local fake auth state with Supabase Auth session handling
+- introduce a shared auth provider instead of per-hook local auth state
+- add a first database migration for profiles, documents, and messages
+- surface missing-environment configuration issues clearly in the auth UI
