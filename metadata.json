@@ -1,0 +1,5 @@
+{
+  "name": "AI PDF Assistant",
+  "description": "An AI-powered document management tool that generates instant summaries and allows you to chat directly with your PDFs.",
+  "requestFramePermissions": []
+}
