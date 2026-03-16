@@ -34,7 +34,7 @@
 - Vercel
   - 适合承载 Next.js 应用部署与演示环境
 
-当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位。第二阶段正在继续清理冗余代码，并把页面状态、共享路径配置、本地会话守卫、认证回跳意图、页面标题同步和页面级演示状态边界接起来。当前展示层为了保持原始视觉效果，仍由 `src/App.tsx` 承载主页面布局；共享配置、会话、展示状态和类型层已经先独立落地，后续再逐步拆分接入。
+当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位。第二阶段正在继续清理冗余代码，并把页面状态、共享路径配置、本地会话守卫、认证回跳意图、页面标题同步、页面级演示状态边界和页面模板拆分接起来。当前展示层为了保持原始视觉效果，仍沿用原始视觉结构，但主入口组件已经收敛为应用壳层，页面模板和基础展示单元已拆到独立模块中。
 
 ## 项目目录结构
 
@@ -49,6 +49,12 @@ ai-pdf-assistant/
 │   ├── phase-2-plan.md
 │   └── prd.md
 ├── src/
+│   ├── components/
+│   │   ├── chat-message.tsx
+│   │   ├── doc-row.tsx
+│   │   ├── feature-card.tsx
+│   │   ├── insight-item.tsx
+│   │   └── placeholder-button.tsx
 │   ├── config/
 │   │   ├── env.ts
 │   │   └── routes.ts
@@ -59,6 +65,11 @@ ai-pdf-assistant/
 │   │   ├── use-auth-intent.ts
 │   │   ├── use-auth-session.ts
 │   │   └── use-document-title.ts
+│   ├── screens/
+│   │   ├── auth-page.tsx
+│   │   ├── dashboard-page.tsx
+│   │   ├── document-detail-page.tsx
+│   │   └── landing-page.tsx
 │   ├── state/
 │   │   └── demo-state.ts
 │   ├── types/
