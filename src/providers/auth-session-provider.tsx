@@ -18,8 +18,8 @@ interface AuthSessionContextValue {
   authError: string | null;
   authNotice: string | null;
   user: AuthUser | null;
-  signIn: (input: LoginInput) => Promise<boolean>;
-  signUp: (input: LoginInput) => Promise<boolean>;
+  signIn: (input: LoginInput) => Promise<{ success: boolean; hasSession: boolean }>;
+  signUp: (input: LoginInput) => Promise<{ success: boolean; hasSession: boolean }>;
   logout: () => Promise<boolean>;
   clearAuthError: () => void;
 }
@@ -65,6 +65,20 @@ function mapSession(session: Session | null): AuthSession | null {
   };
 }
 
+async function hydrateAppSession(session: Session | null, supabase: ReturnType<typeof getSupabaseBrowserClient>) {
+  if (!session || !supabase) {
+    return null;
+  }
+
+  const mappedSession = mapSession(session);
+  if (!mappedSession) {
+    return null;
+  }
+
+  const profileBackedUser = await fetchUserProfile(supabase, mappedSession.user);
+  return { user: profileBackedUser };
+}
+
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -93,13 +107,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           setAuthError(error.message);
           setSession(null);
         } else {
-          const mappedSession = mapSession(data.session);
-          if (mappedSession) {
-            const profileBackedUser = await fetchUserProfile(supabase, mappedSession.user);
-            setSession({ user: profileBackedUser });
-          } else {
-            setSession(null);
-          }
+          setSession(await hydrateAppSession(data.session, supabase));
         }
 
         setIsAuthReady(true);
@@ -114,13 +122,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       });
 
     const { data } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
-      const mappedSession = mapSession(nextSession);
-      if (mappedSession) {
-        const profileBackedUser = await fetchUserProfile(supabase, mappedSession.user);
-        setSession({ user: profileBackedUser });
-      } else {
-        setSession(null);
-      }
+      setSession(await hydrateAppSession(nextSession, supabase));
 
       setIsAuthReady(true);
     });
@@ -142,54 +144,69 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       signIn: async (input) => {
         if (!supabase) {
           setAuthError('Supabase is not configured.');
-          return false;
+          return { success: false, hasSession: false };
         }
 
-        setAuthError(null);
-        setAuthNotice(null);
-        const { error } = await withTimeout(
-          supabase.auth.signInWithPassword({
-            email: input.email,
-            password: input.password,
-          }),
-          'Login timed out. Check your network and Supabase configuration, then try again.',
-        );
+        try {
+          setAuthError(null);
+          setAuthNotice(null);
+          const { data, error } = await withTimeout(
+            supabase.auth.signInWithPassword({
+              email: input.email,
+              password: input.password,
+            }),
+            'Login timed out. Check your network and Supabase configuration, then try again.',
+          );
 
-        if (error) {
-          setAuthError(error.message);
-          return false;
+          if (error) {
+            setAuthError(error.message);
+            return { success: false, hasSession: false };
+          }
+
+          setSession(await hydrateAppSession(data.session, supabase));
+          return { success: true, hasSession: Boolean(data.session) };
+        } catch (error) {
+          setAuthError(error instanceof Error ? error.message : 'Login failed.');
+          return { success: false, hasSession: false };
         }
-
-        return true;
       },
       signUp: async (input) => {
         if (!supabase) {
           setAuthError('Supabase is not configured.');
-          return false;
+          return { success: false, hasSession: false };
         }
 
-        setAuthError(null);
-        setAuthNotice(null);
-        const { error } = await withTimeout(
-          supabase.auth.signUp({
-            email: input.email,
-            password: input.password,
-            options: {
-              data: {
-                full_name: input.fullName?.trim() || input.email.split('@')[0] || 'Workspace User',
+        try {
+          setAuthError(null);
+          setAuthNotice(null);
+          const { data, error } = await withTimeout(
+            supabase.auth.signUp({
+              email: input.email,
+              password: input.password,
+              options: {
+                data: {
+                  full_name: input.fullName?.trim() || input.email.split('@')[0] || 'Workspace User',
+                },
               },
-            },
-          }),
-          'Signup timed out. Check your network and Supabase configuration, then try again.',
-        );
+            }),
+            'Signup timed out. Check your network and Supabase configuration, then try again.',
+          );
 
-        if (error) {
-          setAuthError(error.message);
-          return false;
+          if (error) {
+            setAuthError(error.message);
+            return { success: false, hasSession: false };
+          }
+
+          setSession(await hydrateAppSession(data.session, supabase));
+          if (!data.session) {
+            setAuthNotice('Account created. If email confirmation is enabled, confirm your email before signing in.');
+          }
+
+          return { success: true, hasSession: Boolean(data.session) };
+        } catch (error) {
+          setAuthError(error instanceof Error ? error.message : 'Signup failed.');
+          return { success: false, hasSession: false };
         }
-
-        setAuthNotice('Account created. If email confirmation is enabled, confirm your email before signing in.');
-        return true;
       },
       logout: async () => {
         if (!supabase) {
@@ -197,18 +214,23 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           return false;
         }
 
-        const { error } = await withTimeout(
-          supabase.auth.signOut(),
-          'Logout timed out. Check your network and try again.',
-        );
-        if (error) {
-          setAuthError(error.message);
+        try {
+          const { error } = await withTimeout(
+            supabase.auth.signOut(),
+            'Logout timed out. Check your network and try again.',
+          );
+          if (error) {
+            setAuthError(error.message);
+            return false;
+          }
+
+          setSession(null);
+          setAuthNotice(null);
+          return true;
+        } catch (error) {
+          setAuthError(error instanceof Error ? error.message : 'Logout failed.');
           return false;
         }
-
-        setSession(null);
-        setAuthNotice(null);
-        return true;
       },
       clearAuthError: () => setAuthError(null),
     }),

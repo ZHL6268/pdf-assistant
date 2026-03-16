@@ -68,7 +68,12 @@ export function useAppFlow(): AppFlowState {
         setScreen(nextScreen);
       },
       completeAuth: async (mode, input) => {
-        await (mode === 'signup' ? signUp(input) : signIn(input));
+        const result = mode === 'signup' ? await signUp(input) : await signIn(input);
+
+        if (result.success && result.hasSession) {
+          setScreen(intentScreen ?? 'dashboard');
+          setIntentScreen(null);
+        }
       },
       openDocumentDetail: () => setScreen('detail'),
       returnToDashboard: () => setScreen('dashboard'),
