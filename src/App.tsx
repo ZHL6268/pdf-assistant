@@ -34,6 +34,8 @@ import { useAppScreen } from './hooks/use-app-screen';
 import { useAuthSession } from './hooks/use-auth-session';
 import { useDocumentTitle } from './hooks/use-document-title';
 import type { LoginInput } from './types/auth';
+import { dashboardState, documentDetailState } from './state/demo-state';
+import type { ChatMessageItem, InsightCardItem } from './types/ui-state';
 
 const PlaceholderButton = ({
   children,
@@ -471,7 +473,7 @@ const Dashboard = ({
           <div className="max-w-6xl mx-auto space-y-8">
             <div>
               <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">{appRoutes.dashboard.label}</h2>
-              <p className="text-slate-500 mt-1">Good morning, Alex. Here's what's happening with your documents.</p>
+              <p className="text-slate-500 mt-1">{dashboardState.greeting}</p>
             </div>
 
             <div className="relative group">
@@ -505,10 +507,11 @@ const Dashboard = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    <DocRow name="Quarterly_Report_Q3.pdf" date="Oct 24, 2023" status="Complete" onOpen={onSelectDoc} />
-                    <DocRow name="Product_Roadmap_2024.pdf" date="Oct 23, 2023" status="Pending" onOpen={onSelectDoc} />
-                    <DocRow name="Legal_Contract_V2.pdf" date="Oct 21, 2023" status="Complete" onOpen={onSelectDoc} />
-                    <DocRow name="Market_Analysis_Global.pdf" date="Oct 19, 2023" status="Complete" onOpen={onSelectDoc} />
+                    {dashboardState.documents.map((document) => (
+                      <React.Fragment key={`${document.name}-${document.date}`}>
+                        <DocRow name={document.name} date={document.date} status={document.status} onOpen={onSelectDoc} />
+                      </React.Fragment>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -588,7 +591,7 @@ const DocumentDetail = ({ onBack }: { onBack: () => void }) => {
               {appRoutes.dashboard.label}
             </button>
             <span className="text-slate-400">/</span>
-            <span className="text-slate-900 font-medium">Q4 Strategic Growth Plan.pdf</span>
+            <span className="text-slate-900 font-medium">{documentDetailState.fileName}</span>
           </nav>
 
           <div className="flex border-b border-slate-200">
@@ -608,16 +611,15 @@ const DocumentDetail = ({ onBack }: { onBack: () => void }) => {
                 <FileText size={24} className="text-[#0d33f2]" />
                 <h3 className="text-lg font-bold text-slate-900">Overall Summary</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed">
-                This document outlines the strategic initiatives for Q4 2024, focusing on aggressive AI integration across all product lines and expanding cloud scalability. It details the budget allocations of $2.4M and defines key performance indicators (KPIs) for evaluating the return on investment (ROI) of these upcoming technological pivots.
-              </p>
+              <p className="text-slate-600 leading-relaxed">{documentDetailState.summary}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InsightItem icon={<TrendingUp size={20} />} color="blue" title="Growth Targets" desc="Projected 15% increase in user acquisition through AI-driven personalization features." />
-              <InsightItem icon={<Wallet size={20} />} color="purple" title="Budget Allocation" desc="$1.2M earmarked for infrastructure, $800k for talent acquisition, and $400k for marketing." />
-              <InsightItem icon={<Cloud size={20} />} color="green" title="Cloud Scalability" desc="Migration to serverless architecture expected to reduce operational costs by 22% annually." />
-              <InsightItem icon={<AlertTriangle size={20} />} color="amber" title="Risk Factors" desc="Potential delays in GPU procurement and regulatory compliance shifts in the EU market." />
+              {documentDetailState.insights.map((insight) => (
+                <React.Fragment key={insight.title}>
+                  <InsightItem color={insight.color} title={insight.title} desc={insight.description} />
+                </React.Fragment>
+              ))}
             </div>
 
             <div className="relative bg-slate-200 rounded-xl h-[400px] overflow-hidden flex items-center justify-center group border border-slate-300">
@@ -644,13 +646,15 @@ const DocumentDetail = ({ onBack }: { onBack: () => void }) => {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            <ChatMessage isAi text="Hello! I've analyzed your document. How can I help you today?" time="Just now" />
-            <ChatMessage text="What is the total budget for Q4 initiatives?" time="2 min ago" />
-            <ChatMessage isAi text={<span>The total budget allocation for Q4 is <strong className="text-[#0d33f2]">$2.4 million</strong>. This is split into infrastructure ($1.2M), talent ($800k), and marketing ($400k).</span>} time="1 min ago" />
+            {documentDetailState.chatMessages.map((message) => (
+              <React.Fragment key={message.id}>
+                <ChatMessage isAi={message.isAi} text={message.text} highlight={message.highlight} time={message.time} />
+              </React.Fragment>
+            ))}
 
             <div className="pt-4 flex flex-wrap gap-2">
-              {['Summarize findings', 'List all KPIs', 'Extract contact info'].map((s) => (
-                <button key={s} className="text-xs border border-slate-200 px-3 py-1.5 rounded-full text-slate-600 hover:bg-slate-50 transition-colors">{s}</button>
+              {documentDetailState.suggestions.map((suggestion) => (
+                <button key={suggestion.label} className="text-xs border border-slate-200 px-3 py-1.5 rounded-full text-slate-600 hover:bg-slate-50 transition-colors">{suggestion.label}</button>
               ))}
             </div>
           </div>
@@ -675,7 +679,18 @@ const DocumentDetail = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
-const InsightItem = ({ icon, color, title, desc }: { icon: React.ReactNode, color: string, title: string, desc: string }) => {
+function renderInsightIcon(color: InsightCardItem['color']) {
+  const icons: Record<InsightCardItem['color'], React.ReactNode> = {
+    blue: <TrendingUp size={20} />,
+    purple: <Wallet size={20} />,
+    green: <Cloud size={20} />,
+    amber: <AlertTriangle size={20} />,
+  };
+
+  return icons[color];
+}
+
+const InsightItem = ({ color, title, desc }: { color: InsightCardItem['color']; title: string; desc: string }) => {
   const colorClasses: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-600',
     purple: 'bg-purple-50 text-purple-600',
@@ -686,7 +701,7 @@ const InsightItem = ({ icon, color, title, desc }: { icon: React.ReactNode, colo
     <div className="bg-white rounded-xl p-5 border border-slate-200 hover:border-[#0d33f2]/30 transition-colors">
       <div className="flex items-start gap-4">
         <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
-          {icon}
+          {renderInsightIcon(color)}
         </div>
         <div>
           <h4 className="font-bold text-slate-900 mb-1">{title}</h4>
@@ -697,10 +712,18 @@ const InsightItem = ({ icon, color, title, desc }: { icon: React.ReactNode, colo
   );
 };
 
-const ChatMessage = ({ isAi, text, time }: { isAi?: boolean, text: React.ReactNode, time: string }) => (
+const ChatMessage = ({ isAi, text, highlight, time }: Omit<ChatMessageItem, 'id'>) => (
   <div className={`flex flex-col gap-2 max-w-[85%] ${isAi ? '' : 'ml-auto items-end'}`}>
     <div className={`p-3 rounded-xl ${isAi ? 'bg-slate-100 rounded-tl-none text-slate-800' : 'bg-[#0d33f2] text-white rounded-tr-none'}`}>
-      <div className="text-sm leading-relaxed">{text}</div>
+      <div className="text-sm leading-relaxed">
+        {text}
+        {highlight ? (
+          <>
+            {' '}
+            <strong className="text-[#0d33f2]">{highlight}</strong>. This is split into infrastructure ($1.2M), talent ($800k), and marketing ($400k).
+          </>
+        ) : null}
+      </div>
     </div>
     <span className="text-[10px] text-slate-400">{isAi ? 'AI Assistant' : 'You'} • {time}</span>
   </div>
