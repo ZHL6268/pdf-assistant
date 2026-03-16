@@ -47,3 +47,4 @@ The project has now entered Phase 2 app-shell cleanup:
 - support both login and signup entry points with post-auth redirect intent
 - move dashboard/detail demo content into dedicated state modules
 - split page templates and reusable display blocks out of `App.tsx` while preserving the same UI
+- centralize screen flow, auth redirect, and shell actions into a dedicated app-flow hook
