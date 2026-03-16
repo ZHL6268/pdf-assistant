@@ -60,4 +60,5 @@ The project has now entered Phase 3 document-management frontend MVP:
 - validate selected files against PDF type and file-size limits
 - persist uploaded document metadata into a local document library
 - synchronize the active document between dashboard and detail page
+- keep the browser title aligned with the active document while on detail
 - keep the existing visual baseline unchanged while making the workflow testable

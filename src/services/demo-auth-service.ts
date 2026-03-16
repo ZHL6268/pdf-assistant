@@ -1,7 +1,7 @@
 import type { AuthSession, LoginInput } from '../types/auth';
 
 export function buildDemoSession(input: LoginInput): AuthSession {
-  const displayName = input.email.split('@')[0] || 'Workspace User';
+  const displayName = input.fullName?.trim() || input.email.split('@')[0] || 'Workspace User';
 
   return {
     user: {

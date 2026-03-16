@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import {
   Download,
   Eye,
@@ -19,6 +19,10 @@ import { useDocumentDetailViewModel } from '../hooks/use-document-detail-view-mo
 
 export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
   const { fileName, summary, insights, chatMessages, suggestions } = useDocumentDetailViewModel();
+
+  useEffect(() => {
+    document.title = `${fileName} | AI PDF Assistant`;
+  }, [fileName]);
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">

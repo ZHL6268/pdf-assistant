@@ -70,6 +70,7 @@ export function AuthPage({
                 onLogin({
                   email: String(formData.get('email') ?? ''),
                   password: String(formData.get('password') ?? ''),
+                  fullName: String(formData.get('fullName') ?? ''),
                 });
               }}
             >

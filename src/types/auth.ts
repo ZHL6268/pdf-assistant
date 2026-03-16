@@ -11,6 +11,7 @@ export interface AuthSession {
 export interface LoginInput {
   email: string;
   password: string;
+  fullName?: string;
 }
 
 export interface AuthFormMode {
