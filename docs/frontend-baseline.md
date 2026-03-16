@@ -52,9 +52,9 @@ Phase 2 app-shell cleanup is complete:
 - expose user-facing profile text through a dedicated profile view-model instead of passing raw auth user data through the shell
 - move demo auth-session persistence and session construction behind dedicated service modules
 
-## Phase 3 Start
+## Phase 3 Completion
 
-The project has now entered Phase 3 document-management frontend MVP:
+Phase 3 document-management frontend MVP is complete:
 
 - make the dashboard upload CTA open a real local file picker
 - validate selected files against PDF type and file-size limits
