@@ -26,6 +26,10 @@
    - 为未配置 Supabase 的环境提供明确提示
    - 更新 README、Architecture 与阶段文档
 
+5. 建立用户资料自动同步
+   - 注册成功后自动写入 `profiles`
+   - 避免后续 documents / messages 外键因缺少 profile 而失败
+
 ## 非目标
 
 - 不实现真实文档上传到 Storage
@@ -39,4 +43,5 @@
 - 登录/注册/登出链路切换为 Supabase Auth
 - 缺失 Supabase 配置时界面会给出明确信息
 - 仓库中存在可执行的数据库 schema / RLS 基线
+- 注册后 `profiles` 可自动落库
 - 文档与代码状态一致

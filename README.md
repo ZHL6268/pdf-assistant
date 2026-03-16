@@ -56,6 +56,12 @@ npm run lint
 npm run build
 ```
 
+Supabase 真实认证联调前，还需要：
+
+1. 在项目根目录创建 `.env.local`
+2. 填入 `VITE_SUPABASE_URL` 和 `VITE_SUPABASE_ANON_KEY`
+3. 在 Supabase Dashboard 的 SQL Editor 执行 [`supabase/migrations/0001_initial_schema.sql`](./supabase/migrations/0001_initial_schema.sql)
+
 ## 技术栈
 
 当前仓库技术栈：
