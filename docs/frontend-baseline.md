@@ -35,7 +35,7 @@ This document captures how the current frontend has been aligned to the supplied
 
 ## Current phase
 
-The project has now entered Phase 2 app-shell cleanup:
+Phase 2 app-shell cleanup is complete:
 
 - preserve the original single-file visual baseline
 - keep shared engineering foundations in separate modules
@@ -50,3 +50,4 @@ The project has now entered Phase 2 app-shell cleanup:
 - centralize screen flow, auth redirect, and shell actions into a dedicated app-flow hook
 - expose dashboard/detail display data through dedicated view-model hooks instead of direct state imports
 - expose user-facing profile text through a dedicated profile view-model instead of passing raw auth user data through the shell
+- move demo auth-session persistence and session construction behind dedicated service modules
