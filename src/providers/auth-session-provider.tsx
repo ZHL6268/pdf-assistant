@@ -20,7 +20,7 @@ interface AuthSessionContextValue {
   user: AuthUser | null;
   signIn: (input: LoginInput) => Promise<boolean>;
   signUp: (input: LoginInput) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: () => Promise<boolean>;
   clearAuthError: () => void;
 }
 
@@ -170,13 +170,18 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       logout: async () => {
         if (!supabase) {
           setAuthError('Supabase is not configured.');
-          return;
+          return false;
         }
 
         const { error } = await supabase.auth.signOut();
         if (error) {
           setAuthError(error.message);
+          return false;
         }
+
+        setSession(null);
+        setAuthNotice(null);
+        return true;
       },
       clearAuthError: () => setAuthError(null),
     }),

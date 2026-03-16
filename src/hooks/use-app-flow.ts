@@ -73,10 +73,12 @@ export function useAppFlow(): AppFlowState {
       openDocumentDetail: () => setScreen('detail'),
       returnToDashboard: () => setScreen('dashboard'),
       logoutToLanding: async () => {
-        await logout();
-        clearAuthError();
-        setIntentScreen(null);
-        setScreen('landing');
+        const isSuccessful = await logout();
+        if (isSuccessful) {
+          clearAuthError();
+          setIntentScreen(null);
+          setScreen('landing');
+        }
       },
     },
   };
