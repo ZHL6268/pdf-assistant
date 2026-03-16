@@ -41,5 +41,7 @@ The project has now entered Phase 2 app-shell cleanup:
 - keep shared engineering foundations in separate modules
 - remove dead UI modules left over from earlier refactors
 - drive page transitions from shared route configuration
+- avoid dead-end placeholder `#` navigation in the live shell
+- keep browser document titles aligned with the active screen
 - add local auth session state and protected-page guards without changing the layout
 - support both login and signup entry points with post-auth redirect intent

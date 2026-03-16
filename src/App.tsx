@@ -32,7 +32,20 @@ import { APP_NAME, MAX_UPLOAD_SIZE_MB } from './constants/app';
 import { useAuthIntent } from './hooks/use-auth-intent';
 import { useAppScreen } from './hooks/use-app-screen';
 import { useAuthSession } from './hooks/use-auth-session';
+import { useDocumentTitle } from './hooks/use-document-title';
 import type { LoginInput } from './types/auth';
+
+const PlaceholderButton = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className: string;
+}) => (
+  <button className={className} type="button">
+    {children}
+  </button>
+);
 
 const LandingPage = ({ onGetStarted, onOpenSignup }: { onGetStarted: () => void; onOpenSignup: () => void }) => {
   return (
@@ -48,9 +61,9 @@ const LandingPage = ({ onGetStarted, onOpenSignup }: { onGetStarted: () => void;
             </div>
             <nav className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Features</a>
-              <a href="#" className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Pricing</a>
-              <a href="#" className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Security</a>
-              <a href="#" className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Resources</a>
+              <PlaceholderButton className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Pricing</PlaceholderButton>
+              <PlaceholderButton className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Security</PlaceholderButton>
+              <PlaceholderButton className="text-sm font-medium hover:text-[#0d33f2] transition-colors">Resources</PlaceholderButton>
             </nav>
             <div className="flex items-center gap-4">
               <button onClick={onGetStarted} className="hidden sm:block text-sm font-medium hover:text-[#0d33f2]">Sign In</button>
@@ -196,38 +209,38 @@ const LandingPage = ({ onGetStarted, onOpenSignup }: { onGetStarted: () => void;
                 Empowering professionals and students with advanced AI document processing tools since 2024.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-[#0d33f2]/10 hover:text-[#0d33f2] transition-all">
+                <PlaceholderButton className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-[#0d33f2]/10 hover:text-[#0d33f2] transition-all">
                   <Twitter size={20} />
-                </a>
-                <a href="#" className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-[#0d33f2]/10 hover:text-[#0d33f2] transition-all">
+                </PlaceholderButton>
+                <PlaceholderButton className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-[#0d33f2]/10 hover:text-[#0d33f2] transition-all">
                   <Linkedin size={20} />
-                </a>
+                </PlaceholderButton>
               </div>
             </div>
             <div className="flex flex-col gap-6">
               <h5 className="font-bold text-slate-900">Product</h5>
               <ul className="flex flex-col gap-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Integrations</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Changelog</a></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Features</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Integrations</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Pricing</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Changelog</PlaceholderButton></li>
               </ul>
             </div>
             <div className="flex flex-col gap-6">
               <h5 className="font-bold text-slate-900">Resources</h5>
               <ul className="flex flex-col gap-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Documentation</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Guides</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Support</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">API Reference</a></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Documentation</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Guides</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Support</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">API Reference</PlaceholderButton></li>
               </ul>
             </div>
             <div className="flex flex-col gap-6">
               <h5 className="font-bold text-slate-900">Legal</h5>
               <ul className="flex flex-col gap-4 text-sm text-slate-500">
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-[#0d33f2] transition-colors">Security</a></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Privacy Policy</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Terms of Service</PlaceholderButton></li>
+                <li><PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Security</PlaceholderButton></li>
               </ul>
             </div>
           </div>
@@ -256,10 +269,10 @@ const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, titl
       <p className="text-slate-600 leading-relaxed">{description}</p>
     </div>
     <div className="mt-auto pt-4">
-      <a href="#" className="text-[#0d33f2] font-bold text-sm inline-flex items-center gap-1 group/link">
+      <PlaceholderButton className="text-[#0d33f2] font-bold text-sm inline-flex items-center gap-1 group/link">
         Learn more
         <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
-      </a>
+      </PlaceholderButton>
     </div>
   </div>
 );
@@ -342,7 +355,7 @@ const LoginPage = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-slate-700">Password</label>
-                  <a className="text-xs font-semibold text-[#0d33f2] hover:underline" href="#">Forgot password?</a>
+                  <PlaceholderButton className="text-xs font-semibold text-[#0d33f2] hover:underline">Forgot password?</PlaceholderButton>
                 </div>
                 <div className="relative">
                   <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Enter your password" type="password" name="password" defaultValue="demo-password" required />
@@ -372,9 +385,9 @@ const LoginPage = ({
         <p className="text-slate-400 text-xs">
           © 2024 {APP_NAME}. All rights reserved.
           <span className="mx-2">|</span>
-          <a className="hover:text-[#0d33f2] transition-colors" href="#">Privacy Policy</a>
+          <PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Privacy Policy</PlaceholderButton>
           <span className="mx-2">|</span>
-          <a className="hover:text-[#0d33f2] transition-colors" href="#">Terms of Service</a>
+          <PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Terms of Service</PlaceholderButton>
         </p>
       </footer>
     </div>
@@ -400,18 +413,18 @@ const Dashboard = ({
           <h1 className="text-xl font-bold tracking-tight text-slate-900">AI PDF</h1>
         </div>
         <nav className="flex-1 px-4 space-y-1">
-          <a className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg bg-[#0d33f2] text-white" href="#">
+          <button className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg bg-[#0d33f2] text-white" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} type="button">
             <LayoutDashboard size={20} />
-            Dashboard
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors" href="#">
+            {appRoutes.dashboard.label}
+          </button>
+          <button className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors" onClick={onSelectDoc} type="button">
             <FolderOpen size={20} />
             My Documents
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors" href="#">
+          </button>
+          <PlaceholderButton className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
             <Settings size={20} />
             Settings
-          </a>
+          </PlaceholderButton>
           <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-red-600 hover:bg-red-50 transition-colors mt-4">
             <LogOut size={20} />
             Logout
@@ -457,7 +470,7 @@ const Dashboard = ({
         <main className="flex-1 overflow-y-auto p-8">
           <div className="max-w-6xl mx-auto space-y-8">
             <div>
-              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard</h2>
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">{appRoutes.dashboard.label}</h2>
               <p className="text-slate-500 mt-1">Good morning, Alex. Here's what's happening with your documents.</p>
             </div>
 
@@ -479,7 +492,7 @@ const Dashboard = ({
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                 <h3 className="font-bold text-slate-900">Recent Documents</h3>
-                <button className="text-sm font-semibold text-[#0d33f2] hover:underline">View All</button>
+                <button className="text-sm font-semibold text-[#0d33f2] hover:underline" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} type="button">View All</button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
@@ -572,7 +585,7 @@ const DocumentDetail = ({ onBack }: { onBack: () => void }) => {
           <nav className="flex items-center gap-2 text-sm">
             <button onClick={onBack} className="text-slate-500 hover:text-[#0d33f2] flex items-center gap-1 transition-colors">
               <LayoutDashboard size={14} />
-              Dashboard
+              {appRoutes.dashboard.label}
             </button>
             <span className="text-slate-400">/</span>
             <span className="text-slate-900 font-medium">Q4 Strategic Growth Plan.pdf</span>
@@ -611,7 +624,7 @@ const DocumentDetail = ({ onBack }: { onBack: () => void }) => {
               <div className="absolute inset-0 opacity-10 bg-center bg-cover" style={{ backgroundImage: "url('https://picsum.photos/seed/pdf-bg/1200/800')" }}></div>
               <div className="relative z-10 flex flex-col items-center gap-4">
                 <FileText size={64} className="text-slate-400" />
-                <button className="bg-white text-slate-900 px-6 py-2.5 rounded-lg font-bold text-sm shadow-xl hover:scale-105 transition-transform">
+                <button className="bg-white text-slate-900 px-6 py-2.5 rounded-lg font-bold text-sm shadow-xl hover:scale-105 transition-transform" type="button">
                   Open Full Preview
                 </button>
               </div>
@@ -697,6 +710,7 @@ export default function App() {
   const { screen, setScreen } = useAppScreen();
   const { isAuthenticated, user, login, logout } = useAuthSession();
   const { intentScreen, setIntentScreen } = useAuthIntent();
+  useDocumentTitle(screen);
 
   useEffect(() => {
     if (!isAuthenticated && appRoutes[screen].isProtected) {
