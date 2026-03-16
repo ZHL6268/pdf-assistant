@@ -5,17 +5,17 @@ import { PlaceholderButton } from '../components/placeholder-button';
 import { appRoutes } from '../config/routes';
 import { MAX_UPLOAD_SIZE_MB } from '../constants/app';
 import { useDashboardViewModel } from '../hooks/use-dashboard-view-model';
+import { useUserProfileViewModel } from '../hooks/use-user-profile-view-model';
 
 export function DashboardPage({
   onSelectDoc,
   onLogout,
-  userName,
 }: {
   onSelectDoc: () => void;
   onLogout: () => void;
-  userName: string;
 }) {
   const { greeting, documents } = useDashboardViewModel();
+  const userProfile = useUserProfileViewModel();
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">
@@ -71,8 +71,8 @@ export function DashboardPage({
             <div className="h-8 w-px bg-slate-200 mx-2"></div>
             <div className="flex items-center gap-3 cursor-pointer group">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-900 leading-none">{userName}</p>
-                <p className="text-xs text-slate-500 mt-1">Premium Plan</p>
+                <p className="text-sm font-semibold text-slate-900 leading-none">{userProfile.displayName}</p>
+                <p className="text-xs text-slate-500 mt-1">{userProfile.planLabel}</p>
               </div>
               <div className="size-10 rounded-full bg-[#0d33f2]/20 flex items-center justify-center overflow-hidden border-2 border-[#0d33f2]/10 group-hover:border-[#0d33f2]/40 transition-all">
                 <img className="w-full h-full object-cover" src="https://picsum.photos/seed/alex/100/100" alt="User" referrerPolicy="no-referrer" />

@@ -18,7 +18,6 @@ interface AppFlowActions {
 
 export interface AppFlowState {
   screen: AppScreen;
-  userName: string;
   actions: AppFlowActions;
 }
 
@@ -45,7 +44,6 @@ export function useAppFlow(): AppFlowState {
 
   return {
     screen,
-    userName: user?.fullName || 'Workspace User',
     actions: {
       openLogin: () => setScreen('login'),
       openSignup: () => setScreen('signup'),

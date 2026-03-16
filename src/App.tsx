@@ -6,7 +6,7 @@ import { DocumentDetailPage } from './screens/document-detail-page';
 import { LandingPage } from './screens/landing-page';
 
 export default function App() {
-  const { screen, userName, actions } = useAppFlow();
+  const { screen, actions } = useAppFlow();
 
   return (
     <AnimatePresence mode="wait">
@@ -24,7 +24,7 @@ export default function App() {
 
       {screen === 'dashboard' ? (
         <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <DashboardPage onSelectDoc={actions.openDocumentDetail} onLogout={actions.logoutToLanding} userName={userName} />
+          <DashboardPage onSelectDoc={actions.openDocumentDetail} onLogout={actions.logoutToLanding} />
         </motion.div>
       ) : null}
 

@@ -49,3 +49,4 @@ The project has now entered Phase 2 app-shell cleanup:
 - split page templates and reusable display blocks out of `App.tsx` while preserving the same UI
 - centralize screen flow, auth redirect, and shell actions into a dedicated app-flow hook
 - expose dashboard/detail display data through dedicated view-model hooks instead of direct state imports
+- expose user-facing profile text through a dedicated profile view-model instead of passing raw auth user data through the shell
