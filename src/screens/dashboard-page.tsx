@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useRef } from 'react';
 import { Bell, CloudUpload, FileText, FolderOpen, LayoutDashboard, LogOut, Search, Settings } from 'lucide-react';
 import { DocRow } from '../components/doc-row';
 import { PlaceholderButton } from '../components/placeholder-button';
@@ -14,8 +14,10 @@ export function DashboardPage({
   onSelectDoc: () => void;
   onLogout: () => void;
 }) {
-  const { greeting, documents } = useDashboardViewModel();
+  const { greeting, documents, uploadError, uploadSuccessMessage, uploadDocument, selectDocument } =
+    useDashboardViewModel();
   const userProfile = useUserProfileViewModel();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">
@@ -96,10 +98,33 @@ export function DashboardPage({
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Upload New PDF</h3>
                 <p className="text-slate-500 mt-1 mb-6">Drag and drop your file here, or click to browse files</p>
-                <button className="bg-[#0d33f2] hover:bg-[#0d33f2]/90 text-white font-bold py-2.5 px-8 rounded-lg transition-all shadow-lg shadow-[#0d33f2]/20" type="button">
+                <input
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="application/pdf"
+                  type="file"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) {
+                      return;
+                    }
+
+                    uploadDocument(file);
+                    event.currentTarget.value = '';
+                  }}
+                />
+                <button
+                  className="bg-[#0d33f2] hover:bg-[#0d33f2]/90 text-white font-bold py-2.5 px-8 rounded-lg transition-all shadow-lg shadow-[#0d33f2]/20"
+                  onClick={() => fileInputRef.current?.click()}
+                  type="button"
+                >
                   Select File
                 </button>
                 <p className="text-xs text-slate-400 mt-4">Supports PDF up to {MAX_UPLOAD_SIZE_MB}MB</p>
+                {uploadSuccessMessage ? (
+                  <p className="text-xs text-green-600 mt-2">{uploadSuccessMessage}</p>
+                ) : null}
+                {uploadError ? <p className="text-xs text-red-600 mt-2">{uploadError}</p> : null}
               </div>
             </div>
 
@@ -123,14 +148,20 @@ export function DashboardPage({
                   <tbody className="divide-y divide-slate-100">
                     {documents.map((document) => (
                       <Fragment key={`${document.name}-${document.date}`}>
-                        <DocRow {...document} onOpen={onSelectDoc} />
+                        <DocRow
+                          {...document}
+                          onOpen={(documentId) => {
+                            selectDocument(documentId);
+                            onSelectDoc();
+                          }}
+                        />
                       </Fragment>
                     ))}
                   </tbody>
                 </table>
               </div>
               <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 text-center">
-                <p className="text-sm text-slate-500">Showing 4 of 28 documents</p>
+                <p className="text-sm text-slate-500">Showing {documents.length} document{documents.length === 1 ? '' : 's'}</p>
               </div>
             </div>
           </div>

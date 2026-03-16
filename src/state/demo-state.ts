@@ -3,10 +3,10 @@ import type { DashboardState, DocumentDetailState } from '../types/ui-state';
 export const dashboardState: DashboardState = {
   greeting: "Good morning, Alex. Here's what's happening with your documents.",
   documents: [
-    { name: 'Quarterly_Report_Q3.pdf', date: 'Oct 24, 2023', status: 'Complete' },
-    { name: 'Product_Roadmap_2024.pdf', date: 'Oct 23, 2023', status: 'Pending' },
-    { name: 'Legal_Contract_V2.pdf', date: 'Oct 21, 2023', status: 'Complete' },
-    { name: 'Market_Analysis_Global.pdf', date: 'Oct 19, 2023', status: 'Complete' },
+    { id: 'demo-document-1', name: 'Quarterly_Report_Q3.pdf', date: 'Oct 24, 2023', status: 'Complete' },
+    { id: 'demo-document-2', name: 'Product_Roadmap_2024.pdf', date: 'Oct 23, 2023', status: 'Pending' },
+    { id: 'demo-document-3', name: 'Legal_Contract_V2.pdf', date: 'Oct 21, 2023', status: 'Complete' },
+    { id: 'demo-document-4', name: 'Market_Analysis_Global.pdf', date: 'Oct 19, 2023', status: 'Complete' },
   ],
 };
 

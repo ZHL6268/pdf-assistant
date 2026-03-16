@@ -33,7 +33,7 @@ This document captures how the current frontend has been aligned to the supplied
 - No API implementation
 - No new business functionality
 
-## Current phase
+## Phase 2 Completion
 
 Phase 2 app-shell cleanup is complete:
 
@@ -51,3 +51,13 @@ Phase 2 app-shell cleanup is complete:
 - expose dashboard/detail display data through dedicated view-model hooks instead of direct state imports
 - expose user-facing profile text through a dedicated profile view-model instead of passing raw auth user data through the shell
 - move demo auth-session persistence and session construction behind dedicated service modules
+
+## Phase 3 Start
+
+The project has now entered Phase 3 document-management frontend MVP:
+
+- make the dashboard upload CTA open a real local file picker
+- validate selected files against PDF type and file-size limits
+- persist uploaded document metadata into a local document library
+- synchronize the active document between dashboard and detail page
+- keep the existing visual baseline unchanged while making the workflow testable

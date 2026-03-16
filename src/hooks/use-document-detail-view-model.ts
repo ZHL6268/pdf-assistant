@@ -1,4 +1,5 @@
 import { documentDetailState } from '../state/demo-state';
+import { useDocumentLibrary } from './use-document-library';
 
 export interface DocumentDetailViewModel {
   fileName: string;
@@ -9,8 +10,10 @@ export interface DocumentDetailViewModel {
 }
 
 export function useDocumentDetailViewModel(): DocumentDetailViewModel {
+  const { activeDocument } = useDocumentLibrary();
+
   return {
-    fileName: documentDetailState.fileName,
+    fileName: activeDocument?.name ?? documentDetailState.fileName,
     summary: documentDetailState.summary,
     insights: documentDetailState.insights,
     chatMessages: documentDetailState.chatMessages,

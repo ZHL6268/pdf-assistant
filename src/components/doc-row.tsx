@@ -2,11 +2,12 @@ import { FileText } from 'lucide-react';
 import type { DocumentRowItem } from '../types/ui-state';
 
 export function DocRow({
+  id,
   name,
   date,
   status,
   onOpen,
-}: DocumentRowItem & { onOpen: () => void }) {
+}: DocumentRowItem & { id?: string; onOpen: (documentId: string) => void }) {
   return (
     <tr className="hover:bg-slate-50 transition-colors">
       <td className="px-6 py-4">
@@ -32,7 +33,7 @@ export function DocRow({
       </td>
       <td className="px-6 py-4 text-right">
         <button
-          onClick={status === 'Complete' ? onOpen : undefined}
+          onClick={status === 'Complete' ? () => onOpen(id ?? name) : undefined}
           className={`${
             status === 'Complete'
               ? 'text-[#0d33f2] hover:bg-[#0d33f2]/10'

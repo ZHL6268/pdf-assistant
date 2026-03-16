@@ -1,7 +1,13 @@
+import type { StoredDocument } from './document';
+
 export interface DocumentRowItem {
   name: string;
   date: string;
   status: 'Complete' | 'Pending';
+}
+
+export interface DashboardDocumentItem extends DocumentRowItem {
+  id: string;
 }
 
 export interface InsightCardItem {
@@ -32,5 +38,5 @@ export interface DocumentDetailState {
 
 export interface DashboardState {
   greeting: string;
-  documents: DocumentRowItem[];
+  documents: DashboardDocumentItem[];
 }
