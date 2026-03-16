@@ -1,4 +1,5 @@
 import { FileText } from 'lucide-react';
+import { APP_NAME } from '../constants/app';
 
 export function AppLogo({ compact = false }: { compact?: boolean }) {
   return (
@@ -11,7 +12,7 @@ export function AppLogo({ compact = false }: { compact?: boolean }) {
           Enterprise MVP
         </p>
         <h1 className={`font-semibold tracking-tight text-[var(--color-ink)] ${compact ? 'text-lg' : 'text-xl'}`}>
-          AI PDF Assistant
+          {APP_NAME}
         </h1>
       </div>
     </div>

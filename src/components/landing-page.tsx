@@ -1,5 +1,6 @@
-import { ArrowRight, LockKeyhole, MessageSquareText, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
+import { ArrowRight, MessageSquareText, ShieldCheck, Sparkles, UploadCloud } from 'lucide-react';
 import { AppLogo } from './app-logo';
+import { appRoutes } from '../config/routes';
 import { coreFeatures, userFlow } from '../data/mock-data';
 
 interface LandingPageProps {
@@ -28,8 +29,9 @@ export function LandingPage({ onOpenLogin, onOpenSignup }: LandingPageProps) {
             <span className="eyebrow">PRD-aligned SaaS shell</span>
             <h2>Bring the frontend in line with a production-style AI document assistant.</h2>
             <p>
-              This interface now reflects the documented MVP: authentication entry points, protected dashboard
-              patterns, document summaries, and grounded chat history without pretending unsupported features exist.
+              This interface now reflects the documented MVP routes such as {appRoutes.login.path},{' '}
+              {appRoutes.signup.path}, {appRoutes.dashboard.path}, and {appRoutes.document.path}, while avoiding
+              unsupported claims about live backend features.
             </p>
             <div className="hero-actions">
               <button className="button button-primary" onClick={onOpenSignup}>
@@ -64,7 +66,10 @@ export function LandingPage({ onOpenLogin, onOpenSignup }: LandingPageProps) {
               <div className="stack-list">
                 <div>
                   <strong>Pages</strong>
-                  <p>Landing, login, signup, dashboard, document detail</p>
+                  <p>
+                    {appRoutes.landing.path}, {appRoutes.login.path}, {appRoutes.signup.path}, {appRoutes.dashboard.path},{' '}
+                    {appRoutes.document.path}
+                  </p>
                 </div>
                 <div>
                   <strong>Modules</strong>

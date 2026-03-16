@@ -1,6 +1,9 @@
 import { Bell, FileText, LogOut, Plus, Search, Shield, Sparkles, UploadCloud } from 'lucide-react';
 import { AppLogo } from './app-logo';
+import { appRoutes } from '../config/routes';
+import { MAX_UPLOAD_SIZE_MB, SUPPORTED_FILE_TYPES } from '../constants/app';
 import { dashboardMetrics, documents } from '../data/mock-data';
+import { formatFileTypes } from '../utils/format';
 
 interface DashboardPageProps {
   onOpenDocument: () => void;
@@ -29,7 +32,10 @@ export function DashboardPage({ onOpenDocument, onLogout }: DashboardPageProps) 
 
         <div className="sidebar-card">
           <span className="eyebrow">Upload standard</span>
-          <p>PDF only, single file, server-side validation, storage and row ownership handled later.</p>
+          <p>
+            {formatFileTypes(SUPPORTED_FILE_TYPES)} only, single file, up to {MAX_UPLOAD_SIZE_MB}MB. Server-side
+            validation, storage, and row ownership are planned next.
+          </p>
         </div>
 
         <button className="button button-secondary button-block" onClick={onLogout}>
@@ -70,7 +76,10 @@ export function DashboardPage({ onOpenDocument, onLogout }: DashboardPageProps) 
             <div>
               <span className="eyebrow">Document intake</span>
               <h3>Upload entry point</h3>
-              <p>The UI is now framed around the documented PDF upload workflow and processing states.</p>
+              <p>
+                The UI is now framed around the documented PDF upload workflow for {appRoutes.dashboard.path} and its
+                processing states.
+              </p>
             </div>
             <div className="upload-actions">
               <div className="upload-icon">

@@ -4,6 +4,7 @@ import { AuthPage } from './components/auth-page';
 import { DashboardPage } from './components/dashboard-page';
 import { DocumentDetailPage } from './components/document-detail-page';
 import { LandingPage } from './components/landing-page';
+import { getAuthScreen } from './config/routes';
 import type { AppScreen, AuthMode } from './types/app';
 
 export default function App() {
@@ -23,11 +24,11 @@ export default function App() {
           <LandingPage
             onOpenLogin={() => {
               setAuthMode('login');
-              setScreen('login');
+              setScreen(getAuthScreen('login'));
             }}
             onOpenSignup={() => {
               setAuthMode('signup');
-              setScreen('signup');
+              setScreen(getAuthScreen('signup'));
             }}
           />
         </motion.div>
@@ -47,7 +48,7 @@ export default function App() {
             onSubmit={() => setScreen('dashboard')}
             onSwitchMode={(mode) => {
               setAuthMode(mode);
-              setScreen(mode);
+              setScreen(getAuthScreen(mode));
             }}
           />
         </motion.div>

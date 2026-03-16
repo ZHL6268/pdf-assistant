@@ -30,6 +30,9 @@ This document captures how the current frontend has been aligned to the supplied
 ## Engineering adjustments
 
 - Shared types moved into `src/types/app.ts`
+- API boundary placeholders added under `src/types/api.ts`
+- Route and environment conventions added under `src/config`
+- App-wide constants added under `src/constants`
 - Static UI content moved into `src/data/mock-data.ts`
 - Monolithic `App.tsx` reduced to screen orchestration only
 - Styling consolidated into `src/index.css` with reusable design tokens and layout classes
@@ -42,3 +45,12 @@ This document captures how the current frontend has been aligned to the supplied
 - No PDF parsing
 - No API implementation
 - No new business functionality
+
+## Current phase
+
+The project has now entered Phase 1 engineering setup:
+
+- establish shared route definitions
+- establish environment variable conventions
+- define API request and response placeholders
+- reduce key UI hardcoding for product constants and constraints

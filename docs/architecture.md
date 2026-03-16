@@ -34,7 +34,7 @@
 - Vercel
   - 适合承载 Next.js 应用部署与演示环境
 
-当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。
+当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已经开始补齐共享配置、环境变量约定和 API 边界占位，为后续接入真实服务做准备。
 
 ## 项目目录结构
 
@@ -45,8 +45,14 @@ ai-pdf-assistant/
 ├── docs/
 │   ├── architecture.md
 │   ├── frontend-baseline.md
+│   ├── phase-1-plan.md
 │   └── prd.md
 ├── src/
+│   ├── config/
+│   │   ├── env.ts
+│   │   └── routes.ts
+│   ├── constants/
+│   │   └── app.ts
 │   ├── components/
 │   │   ├── app-logo.tsx
 │   │   ├── auth-page.tsx
@@ -56,7 +62,10 @@ ai-pdf-assistant/
 │   ├── data/
 │   │   └── mock-data.ts
 │   ├── types/
+│   │   ├── api.ts
 │   │   └── app.ts
+│   ├── utils/
+│   │   └── format.ts
 │   ├── App.tsx
 │   ├── index.css
 │   └── main.tsx

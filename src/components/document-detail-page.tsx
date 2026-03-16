@@ -1,4 +1,5 @@
 import { ArrowLeft, FileText, MessageSquareText, PanelLeftClose, Send, Sparkles } from 'lucide-react';
+import { appRoutes } from '../config/routes';
 import { chatHistory, summaryHighlights } from '../data/mock-data';
 
 export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
@@ -8,7 +9,7 @@ export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
         <div className="detail-heading">
           <button className="back-link" onClick={onBack}>
             <ArrowLeft size={16} />
-            Dashboard
+            {appRoutes.dashboard.label}
           </button>
           <div>
             <span className="eyebrow">Document workspace</span>

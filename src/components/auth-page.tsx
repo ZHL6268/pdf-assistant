@@ -1,5 +1,6 @@
 import { ChevronLeft, Lock, Mail, UserRound } from 'lucide-react';
 import { AppLogo } from './app-logo';
+import { appRoutes } from '../config/routes';
 import type { AuthMode } from '../types/app';
 
 interface AuthPageProps {
@@ -21,7 +22,7 @@ export function AuthPage({ mode, onBack, onSubmit, onSwitchMode }: AuthPageProps
         </button>
         <AppLogo />
         <div className="auth-copy">
-          <span className="eyebrow">{isSignup ? 'Signup route' : 'Login route'}</span>
+          <span className="eyebrow">{isSignup ? appRoutes.signup.path : appRoutes.login.path}</span>
           <h2>{isSignup ? 'Create a protected workspace account.' : 'Sign in to your document workspace.'}</h2>
           <p>
             This form structure reflects the PRD page map and keeps authentication separate from dashboard and
