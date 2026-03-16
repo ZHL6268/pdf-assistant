@@ -42,3 +42,4 @@ The project has now entered Phase 2 app-shell cleanup:
 - remove dead UI modules left over from earlier refactors
 - drive page transitions from shared route configuration
 - add local auth session state and protected-page guards without changing the layout
+- support both login and signup entry points with post-auth redirect intent

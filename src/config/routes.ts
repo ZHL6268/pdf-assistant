@@ -1,4 +1,4 @@
-export type AppScreen = 'landing' | 'login' | 'dashboard' | 'detail';
+export type AppScreen = 'landing' | 'login' | 'signup' | 'dashboard' | 'detail';
 
 export interface AppRoute {
   path: string;
@@ -18,6 +18,12 @@ export const appRoutes = {
     path: '/login',
     screen: 'login',
     label: 'Login',
+    isProtected: false,
+  },
+  signup: {
+    path: '/signup',
+    screen: 'signup',
+    label: 'Sign Up',
     isProtected: false,
   },
   dashboard: {

@@ -29,11 +29,12 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { appRoutes } from './config/routes';
 import { APP_NAME, MAX_UPLOAD_SIZE_MB } from './constants/app';
+import { useAuthIntent } from './hooks/use-auth-intent';
 import { useAppScreen } from './hooks/use-app-screen';
 import { useAuthSession } from './hooks/use-auth-session';
 import type { LoginInput } from './types/auth';
 
-const LandingPage = ({ onGetStarted }: { onGetStarted: () => void }) => {
+const LandingPage = ({ onGetStarted, onOpenSignup }: { onGetStarted: () => void; onOpenSignup: () => void }) => {
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-slate-900 font-sans">
       <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-[#f5f6f8]/80 backdrop-blur-md">
@@ -53,7 +54,7 @@ const LandingPage = ({ onGetStarted }: { onGetStarted: () => void }) => {
             </nav>
             <div className="flex items-center gap-4">
               <button onClick={onGetStarted} className="hidden sm:block text-sm font-medium hover:text-[#0d33f2]">Sign In</button>
-              <button onClick={onGetStarted} className="bg-[#0d33f2] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#0d33f2]/90 transition-all shadow-lg shadow-[#0d33f2]/20">
+              <button onClick={onOpenSignup} className="bg-[#0d33f2] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#0d33f2]/90 transition-all shadow-lg shadow-[#0d33f2]/20">
                 Get Started
               </button>
             </div>
@@ -80,7 +81,7 @@ const LandingPage = ({ onGetStarted }: { onGetStarted: () => void }) => {
                   Experience the future of document management. Generate instant summaries and chat directly with your PDFs using advanced AI. Stop reading, start understanding.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button onClick={onGetStarted} className="bg-[#0d33f2] text-white px-8 py-4 rounded-xl text-lg font-bold hover:scale-[1.02] transition-transform shadow-xl shadow-[#0d33f2]/25">
+                  <button onClick={onOpenSignup} className="bg-[#0d33f2] text-white px-8 py-4 rounded-xl text-lg font-bold hover:scale-[1.02] transition-transform shadow-xl shadow-[#0d33f2]/25">
                     Get Started for Free
                   </button>
                   <button className="flex items-center justify-center gap-2 bg-white border border-slate-200 px-8 py-4 rounded-xl text-lg font-bold hover:bg-slate-50 transition-all">
@@ -169,7 +170,7 @@ const LandingPage = ({ onGetStarted }: { onGetStarted: () => void }) => {
                   Join thousands of students, researchers, and professionals who are saving hours every week.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                  <button onClick={onGetStarted} className="bg-white text-[#0d33f2] px-8 py-4 rounded-xl text-lg font-bold hover:bg-slate-100 transition-colors shadow-xl">
+                  <button onClick={onOpenSignup} className="bg-white text-[#0d33f2] px-8 py-4 rounded-xl text-lg font-bold hover:bg-slate-100 transition-colors shadow-xl">
                     Get Started for Free
                   </button>
                   <button className="bg-[#0d33f2]/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-white/10 transition-colors">
@@ -263,7 +264,17 @@ const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, titl
   </div>
 );
 
-const LoginPage = ({ onLogin }: { onLogin: (input: LoginInput) => void }) => {
+const LoginPage = ({
+  mode,
+  onLogin,
+  onSwitchMode,
+}: {
+  mode: 'login' | 'signup';
+  onLogin: (input: LoginInput) => void;
+  onSwitchMode: (screen: 'login' | 'signup') => void;
+}) => {
+  const isSignup = mode === 'signup';
+
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-slate-900 font-sans flex flex-col">
       <header className="flex items-center justify-between border-b border-slate-200 px-6 lg:px-10 py-3 bg-white">
@@ -283,8 +294,8 @@ const LoginPage = ({ onLogin }: { onLogin: (input: LoginInput) => void }) => {
           className="w-full max-w-[480px] space-y-8 bg-white p-8 rounded-xl shadow-sm border border-slate-200"
         >
           <div className="text-center space-y-2">
-            <h1 className="text-slate-900 text-3xl font-bold tracking-tight">Welcome Back</h1>
-            <p className="text-slate-500 text-base">Log in to manage your smart documents</p>
+            <h1 className="text-slate-900 text-3xl font-bold tracking-tight">{isSignup ? 'Create Your Account' : 'Welcome Back'}</h1>
+            <p className="text-slate-500 text-base">{isSignup ? 'Set up your workspace access' : 'Log in to manage your smart documents'}</p>
           </div>
 
           <div className="space-y-4">
@@ -295,7 +306,7 @@ const LoginPage = ({ onLogin }: { onLogin: (input: LoginInput) => void }) => {
                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
               </svg>
-              <span className="text-slate-700 font-medium">Sign in with Google</span>
+              <span className="text-slate-700 font-medium">{isSignup ? 'Sign up with Google' : 'Sign in with Google'}</span>
             </button>
 
             <div className="relative py-2">
@@ -320,8 +331,14 @@ const LoginPage = ({ onLogin }: { onLogin: (input: LoginInput) => void }) => {
             >
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Email address</label>
-                <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="name@company.com" type="email" name="email" defaultValue="alex@company.com" required />
+                    <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="name@company.com" type="email" name="email" defaultValue="alex@company.com" required />
               </div>
+              {isSignup && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">Full name</label>
+                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Alex Rivera" type="text" name="fullName" defaultValue="Alex Rivera" required />
+                </div>
+              )}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-slate-700">Password</label>
@@ -335,15 +352,17 @@ const LoginPage = ({ onLogin }: { onLogin: (input: LoginInput) => void }) => {
                 </div>
               </div>
               <button className="w-full py-3 px-4 bg-[#0d33f2] text-white rounded-lg font-bold text-sm tracking-wide hover:bg-[#0d33f2]/90 transition-all shadow-lg shadow-[#0d33f2]/20" type="submit">
-                Log In
+                {isSignup ? 'Create Account' : 'Log In'}
               </button>
             </form>
           </div>
 
           <div className="pt-6 border-t border-slate-100 text-center">
             <p className="text-sm text-slate-600">
-              Don't have an account?
-              <a className="text-[#0d33f2] font-bold hover:underline ml-1" href="#">Create an account</a>
+              {isSignup ? 'Already have an account?' : "Don't have an account?"}
+              <button className="text-[#0d33f2] font-bold hover:underline ml-1" onClick={() => onSwitchMode(isSignup ? 'login' : 'signup')} type="button">
+                {isSignup ? 'Log in' : 'Create an account'}
+              </button>
             </p>
           </div>
         </motion.div>
@@ -677,33 +696,38 @@ const ChatMessage = ({ isAi, text, time }: { isAi?: boolean, text: React.ReactNo
 export default function App() {
   const { screen, setScreen } = useAppScreen();
   const { isAuthenticated, user, login, logout } = useAuthSession();
+  const { intentScreen, setIntentScreen } = useAuthIntent();
 
   useEffect(() => {
     if (!isAuthenticated && appRoutes[screen].isProtected) {
+      setIntentScreen(screen);
       setScreen('login');
     }
-  }, [isAuthenticated, screen, setScreen]);
+  }, [isAuthenticated, screen, setIntentScreen, setScreen]);
 
   useEffect(() => {
-    if (isAuthenticated && (screen === 'landing' || screen === 'login')) {
-      setScreen('dashboard');
+    if (isAuthenticated && (screen === 'landing' || screen === 'login' || screen === 'signup')) {
+      setScreen(intentScreen ?? 'dashboard');
+      setIntentScreen(null);
     }
-  }, [isAuthenticated, screen, setScreen]);
+  }, [intentScreen, isAuthenticated, screen, setIntentScreen, setScreen]);
 
   return (
     <AnimatePresence mode="wait">
       {screen === 'landing' && (
         <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <LandingPage onGetStarted={() => setScreen('login')} />
+          <LandingPage onGetStarted={() => setScreen('login')} onOpenSignup={() => setScreen('signup')} />
         </motion.div>
       )}
-      {screen === 'login' && (
-        <motion.div key="login" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      {(screen === 'login' || screen === 'signup') && (
+        <motion.div key={screen} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <LoginPage
+            mode={screen}
             onLogin={(input) => {
               login(input);
               setScreen('dashboard');
             }}
+            onSwitchMode={(nextScreen) => setScreen(nextScreen)}
           />
         </motion.div>
       )}
