@@ -4,7 +4,7 @@ import { DocRow } from '../components/doc-row';
 import { PlaceholderButton } from '../components/placeholder-button';
 import { appRoutes } from '../config/routes';
 import { MAX_UPLOAD_SIZE_MB } from '../constants/app';
-import { dashboardState } from '../state/demo-state';
+import { useDashboardViewModel } from '../hooks/use-dashboard-view-model';
 
 export function DashboardPage({
   onSelectDoc,
@@ -15,6 +15,8 @@ export function DashboardPage({
   onLogout: () => void;
   userName: string;
 }) {
+  const { greeting, documents } = useDashboardViewModel();
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">
       <aside className="w-64 flex-shrink-0 border-r border-slate-200 bg-white hidden md:flex flex-col">
@@ -83,7 +85,7 @@ export function DashboardPage({
           <div className="max-w-6xl mx-auto space-y-8">
             <div>
               <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">{appRoutes.dashboard.label}</h2>
-              <p className="text-slate-500 mt-1">{dashboardState.greeting}</p>
+              <p className="text-slate-500 mt-1">{greeting}</p>
             </div>
 
             <div className="relative group">
@@ -119,7 +121,7 @@ export function DashboardPage({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {dashboardState.documents.map((document) => (
+                    {documents.map((document) => (
                       <Fragment key={`${document.name}-${document.date}`}>
                         <DocRow {...document} onOpen={onSelectDoc} />
                       </Fragment>

@@ -15,9 +15,11 @@ import { ChatMessage } from '../components/chat-message';
 import { InsightItem } from '../components/insight-item';
 import { appRoutes } from '../config/routes';
 import { APP_NAME } from '../constants/app';
-import { documentDetailState } from '../state/demo-state';
+import { useDocumentDetailViewModel } from '../hooks/use-document-detail-view-model';
 
 export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
+  const { fileName, summary, insights, chatMessages, suggestions } = useDocumentDetailViewModel();
+
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">
       <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3 z-10">
@@ -54,7 +56,7 @@ export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
               {appRoutes.dashboard.label}
             </button>
             <span className="text-slate-400">/</span>
-            <span className="text-slate-900 font-medium">{documentDetailState.fileName}</span>
+            <span className="text-slate-900 font-medium">{fileName}</span>
           </nav>
 
           <div className="flex border-b border-slate-200">
@@ -74,11 +76,11 @@ export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
                 <FileText size={24} className="text-[#0d33f2]" />
                 <h3 className="text-lg font-bold text-slate-900">Overall Summary</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed">{documentDetailState.summary}</p>
+              <p className="text-slate-600 leading-relaxed">{summary}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {documentDetailState.insights.map((insight) => (
+              {insights.map((insight) => (
                 <Fragment key={insight.title}>
                   <InsightItem color={insight.color} title={insight.title} desc={insight.description} />
                 </Fragment>
@@ -109,14 +111,14 @@ export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {documentDetailState.chatMessages.map((message) => (
+            {chatMessages.map((message) => (
               <Fragment key={message.id}>
                 <ChatMessage isAi={message.isAi} text={message.text} highlight={message.highlight} time={message.time} />
               </Fragment>
             ))}
 
             <div className="pt-4 flex flex-wrap gap-2">
-              {documentDetailState.suggestions.map((suggestion) => (
+              {suggestions.map((suggestion) => (
                 <button key={suggestion.label} className="text-xs border border-slate-200 px-3 py-1.5 rounded-full text-slate-600 hover:bg-slate-50 transition-colors" type="button">
                   {suggestion.label}
                 </button>
