@@ -128,10 +128,15 @@ async function generateAnswer(
           ...priorMessages.map((message) => ({
             role: message.role,
             content: [
-              {
-                type: 'input_text',
-                text: message.content,
-              },
+              message.role === 'assistant'
+                ? {
+                    type: 'output_text',
+                    text: message.content,
+                  }
+                : {
+                    type: 'input_text',
+                    text: message.content,
+                  },
             ],
           })),
           {
