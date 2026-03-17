@@ -76,6 +76,7 @@ Supabase 真实认证联调前，还需要：
 - React 19
 - TypeScript
 - Vite
+- React Router
 - Tailwind CSS v4
 - Lucide React
 - Motion

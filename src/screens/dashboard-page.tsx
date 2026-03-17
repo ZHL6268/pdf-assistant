@@ -9,9 +9,11 @@ import { useUserProfileViewModel } from '../hooks/use-user-profile-view-model';
 
 export function DashboardPage({
   onSelectDoc,
+  onOpenFirstDocument,
   onLogout,
 }: {
-  onSelectDoc: () => void;
+  onSelectDoc: (documentId: string) => void;
+  onOpenFirstDocument: () => void;
   onLogout: () => void;
 }) {
   const {
@@ -41,7 +43,7 @@ export function DashboardPage({
             <LayoutDashboard size={20} />
             {appRoutes.dashboard.label}
           </button>
-          <button className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors" onClick={onSelectDoc} type="button">
+          <button className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors" onClick={onOpenFirstDocument} type="button">
             <FolderOpen size={20} />
             My Documents
           </button>
@@ -161,7 +163,7 @@ export function DashboardPage({
                           {...document}
                           onOpen={(documentId) => {
                             selectDocument(documentId);
-                            onSelectDoc();
+                            onSelectDoc(documentId);
                           }}
                         />
                       </Fragment>

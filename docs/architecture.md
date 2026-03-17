@@ -16,6 +16,8 @@
   - 用于统一图标表达，减少自定义图标维护成本
 - Motion
   - 用于轻量页面切换与交互动效，保持产品演示质量
+- React Router
+  - 当前正式路由、受保护页面和登录回跳都由 `react-router-dom` 承担
 - Supabase Auth / Database / Storage / Functions
   - 当前真实认证、文档存储、文档列表和文档处理后端都依赖 Supabase 体系
 - OpenAI API
@@ -69,14 +71,11 @@ ai-pdf-assistant/
 │   ├── constants/
 │   │   └── app.ts
 │   ├── hooks/
-│   │   ├── use-app-flow.ts
-│   │   ├── use-app-screen.ts
-│   │   ├── use-auth-intent.ts
 │   │   ├── use-auth-session.ts
 │   │   ├── use-dashboard-view-model.ts
 │   │   ├── use-document-library.ts
 │   │   ├── use-document-detail-view-model.ts
-│   │   └── use-document-title.ts
+│   │   └── use-user-profile-view-model.ts
 │   ├── screens/
 │   │   ├── auth-page.tsx
 │   │   ├── dashboard-page.tsx
@@ -172,6 +171,7 @@ ai-pdf-assistant/
 - 页面层只处理表单与状态展示
 - 认证逻辑放在服务层
 - 第三方认证客户端放在 `lib/supabase`
+- 页面保护和登录后回跳由 `react-router-dom` 路由层处理
 
 ### 2. 文档管理模块
 

@@ -20,17 +20,15 @@ This document captures how the current frontend has been aligned to the supplied
 - API boundary placeholders added under `src/types/api.ts`
 - Route and environment conventions added under `src/config`
 - App-wide constants added under `src/constants`
-- Page state and browser path syncing added under `src/hooks/use-app-screen.ts`
+- Formal routing now runs through `react-router-dom`
 - Real auth now runs through Supabase via `src/providers/auth-session-provider.tsx`
 - Real document upload/listing now runs through `src/services/document-service.ts`
 - `src/index.css` remains minimal so the original Tailwind utility layout renders unchanged
 
 ## Explicit non-goals
 
-- No third-party router integration
 - No real document chat yet
 - No vector retrieval yet
-- No formal router migration yet
 
 ## Phase 2 Completion
 
@@ -50,6 +48,12 @@ Phase 2 app-shell cleanup is complete:
 - expose dashboard/detail display data through dedicated view-model hooks instead of direct state imports
 - expose user-facing profile text through a dedicated profile view-model instead of passing raw auth user data through the shell
 - move demo auth-session persistence and session construction behind dedicated service modules
+
+Router cleanup completed after Phase 6:
+
+- the temporary custom `history + screen` navigation layer has been removed
+- route protection and auth redirect intent now live in `react-router-dom`
+- document detail now uses a dynamic route segment instead of a hard-coded demo path
 
 ## Phase 3 Completion
 
