@@ -22,20 +22,32 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-function encodeBase64(fileBytes: Uint8Array) {
-  let binary = '';
-
-  for (const byte of fileBytes) {
-    binary += String.fromCharCode(byte);
-  }
-
-  return btoa(binary);
-}
-
 async function generateSummary(fileBytes: Uint8Array, fileName: string) {
   const apiKey = Deno.env.get('OPENAI_API_KEY');
   if (!apiKey) {
     throw new Error('OPENAI_API_KEY is not configured.');
+  }
+
+  const uploadFormData = new FormData();
+  uploadFormData.append('purpose', 'user_data');
+  uploadFormData.append('file', new Blob([fileBytes], { type: 'application/pdf' }), fileName);
+
+  const uploadResponse = await fetch('https://api.openai.com/v1/files', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: uploadFormData,
+  });
+
+  if (!uploadResponse.ok) {
+    const errorText = await uploadResponse.text();
+    throw new Error(`OpenAI file upload failed: ${errorText}`);
+  }
+
+  const uploadedFile = (await uploadResponse.json()) as { id?: string };
+  if (!uploadedFile.id) {
+    throw new Error('OpenAI file upload did not return a file id.');
   }
 
   const response = await fetch('https://api.openai.com/v1/responses', {
@@ -62,8 +74,7 @@ async function generateSummary(fileBytes: Uint8Array, fileName: string) {
           content: [
             {
               type: 'input_file',
-              filename: fileName,
-              file_data: encodeBase64(fileBytes),
+              file_id: uploadedFile.id,
             },
             {
               type: 'input_text',

@@ -213,7 +213,7 @@ ai-pdf-assistant/
 
 当前实现：
 
-- 由 `process-document` Edge Function 内部调用 OpenAI Responses API
+- 由 `process-document` Edge Function 先上传 PDF 到 OpenAI Files API，再调用 Responses API
 - 摘要结果写回 `documents.summary`
 - 前端 detail 页优先读取真实 summary，失败时展示状态文案
 
