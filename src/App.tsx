@@ -157,7 +157,7 @@ function DashboardRoute() {
 function DocumentDetailRoute() {
   const navigate = useNavigate();
   const { documentId } = useParams();
-  const { documents, isLibraryLoading, selectDocument } = useDocumentLibrary();
+  const { documents, hasLoadedDocuments, isLibraryLoading, selectDocument } = useDocumentLibrary();
 
   const currentDocument = documentId
     ? documents.find((document) => document.id === documentId) ?? null
@@ -170,7 +170,7 @@ function DocumentDetailRoute() {
   }, [documentId, selectDocument]);
 
   useEffect(() => {
-    if (!documentId || isLibraryLoading) {
+    if (!documentId || isLibraryLoading || !hasLoadedDocuments) {
       return;
     }
 
@@ -178,7 +178,7 @@ function DocumentDetailRoute() {
     if (!hasDocument) {
       navigate(appRoutes.dashboard.path, { replace: true });
     }
-  }, [documentId, documents, isLibraryLoading, navigate]);
+  }, [documentId, documents, hasLoadedDocuments, isLibraryLoading, navigate]);
 
   return (
     <PageTransition routeKey={`document-${documentId ?? 'unknown'}`}>

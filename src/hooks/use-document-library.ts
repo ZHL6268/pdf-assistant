@@ -14,6 +14,7 @@ export function useDocumentLibrary() {
   const [uploadSuccessMessage, setUploadSuccessMessage] = useState<string | null>(null);
   const [isLibraryLoading, setIsLibraryLoading] = useState(false);
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
+  const [hasLoadedDocuments, setHasLoadedDocuments] = useState(false);
 
   const syncActiveDocumentId = useCallback((nextDocuments: StoredDocument[]) => {
     const storedActiveDocumentId = readActiveDocumentId();
@@ -36,6 +37,7 @@ export function useDocumentLibrary() {
       setDocuments([]);
       writeActiveDocumentId(null);
       setActiveDocumentId(null);
+      setHasLoadedDocuments(true);
       return;
     }
 
@@ -55,6 +57,7 @@ export function useDocumentLibrary() {
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : 'Documents could not be loaded.');
     } finally {
+      setHasLoadedDocuments(true);
       setIsLibraryLoading(false);
     }
   }, [isAuthReady, isAuthenticated, isSupabaseReady, syncActiveDocumentId]);
@@ -136,6 +139,7 @@ export function useDocumentLibrary() {
   return {
     documents,
     activeDocument,
+    hasLoadedDocuments,
     isLibraryLoading,
     isUploadingDocument,
     uploadError,
