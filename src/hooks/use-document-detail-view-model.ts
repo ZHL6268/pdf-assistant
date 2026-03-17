@@ -1,5 +1,6 @@
 import { documentDetailState } from '../state/demo-state';
 import type { StoredDocument } from '../types/document';
+import { useDocumentChat } from './use-document-chat';
 
 export interface DocumentDetailViewModel {
   fileName: string;
@@ -8,9 +9,16 @@ export interface DocumentDetailViewModel {
   insights: typeof documentDetailState.insights;
   chatMessages: typeof documentDetailState.chatMessages;
   suggestions: typeof documentDetailState.suggestions;
+  chatError: string | null;
+  isChatLoading: boolean;
+  isSendingMessage: boolean;
+  submitQuestion: (question: string) => Promise<boolean>;
 }
 
 export function useDocumentDetailViewModel(activeDocument: StoredDocument | null): DocumentDetailViewModel {
+  const { messages, chatError, isChatLoading, isSendingMessage, submitQuestion } = useDocumentChat(
+    activeDocument?.id ?? null,
+  );
   const summary =
     activeDocument?.summary ||
     (activeDocument?.status === 'Pending'
@@ -25,7 +33,21 @@ export function useDocumentDetailViewModel(activeDocument: StoredDocument | null
     summary,
     summaryStatus: activeDocument?.status ?? 'Complete',
     insights: documentDetailState.insights,
-    chatMessages: documentDetailState.chatMessages,
+    chatMessages:
+      messages.length > 0
+        ? messages
+        : [
+            {
+              id: 'chat-empty-state',
+              isAi: true,
+              text: 'Ask a question about this document to start a real conversation. Your answers will be saved to this document history.',
+              time: 'Just now',
+            },
+          ],
     suggestions: documentDetailState.suggestions,
+    chatError,
+    isChatLoading,
+    isSendingMessage,
+    submitQuestion,
   };
 }

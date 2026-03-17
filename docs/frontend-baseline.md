@@ -27,7 +27,6 @@ This document captures how the current frontend has been aligned to the supplied
 
 ## Explicit non-goals
 
-- No real document chat yet
 - No vector retrieval yet
 
 ## Phase 2 Completion
@@ -82,9 +81,15 @@ Phase 5 is complete:
 - a second migration now provisions the `documents` storage bucket and policies
 - dashboard reads and uploads now use real backend data
 
-Phase 6 is in progress:
+Phase 6 is complete:
 
 - a Supabase Edge Function now owns PDF text extraction and summary generation
 - uploads move through real `uploaded / processing / complete / failed` states
 - document detail now prefers real `summary` data from the database
-- insight cards and chat remain demo content until the next phase
+
+Phase 7 is in progress:
+
+- detail chat now loads real `messages` history per document
+- a dedicated Edge Function now answers grounded single-document questions
+- question / answer pairs are persisted to `messages`
+- insight cards still remain demo content

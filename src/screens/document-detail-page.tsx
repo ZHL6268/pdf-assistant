@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   Download,
   Eye,
@@ -25,12 +25,31 @@ export function DocumentDetailPage({
   document: StoredDocument | null;
   onBack: () => void;
 }) {
-  const { fileName, summary, summaryStatus, insights, chatMessages, suggestions } =
+  const [draftQuestion, setDraftQuestion] = useState('');
+  const {
+    fileName,
+    summary,
+    summaryStatus,
+    insights,
+    chatMessages,
+    suggestions,
+    chatError,
+    isChatLoading,
+    isSendingMessage,
+    submitQuestion,
+  } =
     useDocumentDetailViewModel(activeDocument);
 
   useEffect(() => {
     document.title = `${fileName} | AI PDF Assistant`;
   }, [fileName]);
+
+  const handleSubmitQuestion = async () => {
+    const isSubmitted = await submitQuestion(draftQuestion);
+    if (isSubmitted) {
+      setDraftQuestion('');
+    }
+  };
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-[#f5f6f8] text-slate-900 font-sans">
@@ -130,12 +149,16 @@ export function DocumentDetailPage({
               <MessageSquare size={20} className="text-[#0d33f2]" />
               <h3 className="font-bold text-slate-900">Chat Assistant</h3>
             </div>
-            <button className="text-xs font-bold text-[#0d33f2] bg-[#0d33f2]/10 px-3 py-1 rounded-full hover:bg-[#0d33f2]/20 transition-colors" type="button">
-              Clear Chat
-            </button>
+            <span className="text-xs font-bold text-[#0d33f2] bg-[#0d33f2]/10 px-3 py-1 rounded-full">
+              History Saved
+            </span>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {isChatLoading ? (
+              <p className="text-xs text-slate-500">Loading conversation...</p>
+            ) : null}
+
             {chatMessages.map((message) => (
               <Fragment key={message.id}>
                 <ChatMessage isAi={message.isAi} text={message.text} highlight={message.highlight} time={message.time} />
@@ -144,7 +167,12 @@ export function DocumentDetailPage({
 
             <div className="pt-4 flex flex-wrap gap-2">
               {suggestions.map((suggestion) => (
-                <button key={suggestion.label} className="text-xs border border-slate-200 px-3 py-1.5 rounded-full text-slate-600 hover:bg-slate-50 transition-colors" type="button">
+                <button
+                  key={suggestion.label}
+                  className="text-xs border border-slate-200 px-3 py-1.5 rounded-full text-slate-600 hover:bg-slate-50 transition-colors"
+                  onClick={() => setDraftQuestion(suggestion.label)}
+                  type="button"
+                >
                   {suggestion.label}
                 </button>
               ))}
@@ -153,12 +181,31 @@ export function DocumentDetailPage({
 
           <div className="p-4 bg-slate-50 border-t border-slate-200">
             <div className="flex flex-col gap-3">
+              {chatError ? <p className="text-xs text-red-600">{chatError}</p> : null}
               <div className="relative">
-                <textarea className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-[#0d33f2] focus:border-transparent outline-none resize-none placeholder:text-slate-400" placeholder="Ask a question about this document..." rows={3}></textarea>
-                <button className="absolute bottom-3 right-3 bg-[#0d33f2] text-white p-2 rounded-lg hover:bg-[#0d33f2]/90 transition-colors flex items-center justify-center" type="button">
+                <textarea
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-[#0d33f2] focus:border-transparent outline-none resize-none placeholder:text-slate-400"
+                  placeholder="Ask a question about this document..."
+                  rows={3}
+                  value={draftQuestion}
+                  onChange={(event) => setDraftQuestion(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && !event.shiftKey && draftQuestion.trim() && !isSendingMessage) {
+                      event.preventDefault();
+                      void handleSubmitQuestion();
+                    }
+                  }}
+                ></textarea>
+                <button
+                  className="absolute bottom-3 right-3 bg-[#0d33f2] text-white p-2 rounded-lg hover:bg-[#0d33f2]/90 transition-colors flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-60"
+                  onClick={() => void handleSubmitQuestion()}
+                  type="button"
+                  disabled={isSendingMessage || !draftQuestion.trim()}
+                >
                   <Send size={16} />
                 </button>
               </div>
+              {isSendingMessage ? <p className="text-xs text-slate-500">Generating answer...</p> : null}
               <button className="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity" type="button">
                 <FileSearch size={16} />
                 Generate Detailed Report
