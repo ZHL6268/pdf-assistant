@@ -77,10 +77,10 @@ export function LandingPage({
                   >
                     Get Started for Free
                   </button>
-                  <button className="flex items-center justify-center gap-2 bg-white border border-slate-200 px-8 py-4 rounded-xl text-lg font-bold hover:bg-slate-50 transition-all" type="button">
+                  <span className="flex items-center justify-center gap-2 bg-white border border-slate-200 px-8 py-4 rounded-xl text-lg font-bold text-slate-400">
                     <PlayCircle size={24} />
-                    See how it works
-                  </button>
+                    Demo Preview Coming Soon
+                  </span>
                 </div>
                 <div className="flex items-center gap-4 text-sm text-slate-500">
                   <div className="flex -space-x-2">
@@ -170,9 +170,9 @@ export function LandingPage({
                   >
                     Get Started for Free
                   </button>
-                  <button className="bg-[#0d33f2]/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-white/10 transition-colors" type="button">
-                    Schedule a Demo
-                  </button>
+                  <span className="bg-[#0d33f2]/20 backdrop-blur-sm border border-white/30 text-white/70 px-8 py-4 rounded-xl text-lg font-bold">
+                    Demo Scheduling Coming Soon
+                  </span>
                 </div>
                 <p className="text-sm text-white/60">No credit card required. Cancel anytime.</p>
               </div>
@@ -232,7 +232,7 @@ export function LandingPage({
             <p className="text-sm text-slate-500">© 2024 {APP_NAME}. All rights reserved. Built for speed and accuracy.</p>
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              Systems Operational
+              MVP Services Operational
             </div>
           </div>
         </div>

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { PlaceholderButton } from './placeholder-button';
 
 export function FeatureCard({
   icon,
@@ -21,10 +20,10 @@ export function FeatureCard({
         <p className="text-slate-600 leading-relaxed">{description}</p>
       </div>
       <div className="mt-auto pt-4">
-        <PlaceholderButton className="text-[#0d33f2] font-bold text-sm inline-flex items-center gap-1 group/link">
+        <span className="text-slate-400 font-bold text-sm inline-flex items-center gap-1">
           Learn more
-          <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
-        </PlaceholderButton>
+          <ArrowRight size={16} />
+        </span>
       </div>
     </div>
   );
