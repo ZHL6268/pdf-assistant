@@ -34,7 +34,7 @@
 - Vercel
   - 适合承载 Next.js 应用部署与演示环境
 
-当前阶段不直接迁移到目标栈，原因是本轮工作重点是先将前端结构整理到合理基线，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位，第二阶段已完成应用壳层整理，第三阶段已完成文档管理前端 MVP，第四阶段已开始真实认证与数据库基线接入。当前代码已经把 dashboard 上传入口、文档列表和当前文档选择推进到真实可交互的本地前端闭环，并开始将认证主链路替换为 Supabase Auth。当前展示层为了保持原始视觉效果，仍沿用原始视觉结构，但主入口组件已经收敛为应用壳层，页面模板、基础展示单元、应用流程编排、展示数据适配层、本地文档服务边界和真实认证基础设施都已拆到独立模块中。
+当前阶段不直接迁移到目标栈，原因是本轮工作重点是先把结构、认证和文档链路分阶段收口，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位，第二阶段已完成应用壳层整理，第三阶段已完成本地文档管理前端 MVP，第四阶段已完成真实认证与数据库基线，第五阶段已开始将文档上传和文档列表替换为 Supabase Storage + `documents` 表。当前展示层为了保持原始视觉效果，仍沿用原始视觉结构，但主入口组件已经收敛为应用壳层，页面模板、基础展示单元、应用流程编排、展示数据适配层、真实认证基础设施和真实文档服务边界都已拆到独立模块中。
 
 ## 项目目录结构
 
@@ -47,6 +47,9 @@ ai-pdf-assistant/
 │   ├── frontend-baseline.md
 │   ├── phase-1-plan.md
 │   ├── phase-2-plan.md
+│   ├── phase-3-plan.md
+│   ├── phase-4-plan.md
+│   ├── phase-5-plan.md
 │   └── prd.md
 ├── src/
 │   ├── components/
@@ -80,11 +83,9 @@ ai-pdf-assistant/
 │   ├── providers/
 │   │   └── auth-session-provider.tsx
 │   ├── services/
-│   │   ├── auth-session-storage.ts
-│   │   ├── demo-auth-service.ts
-│   │   ├── demo-document-service.ts
+│   │   ├── document-service.ts
 │   │   ├── document-storage.ts
-│   │   └── document-upload-service.ts
+│   │   └── profile-service.ts
 │   ├── state/
 │   │   └── demo-state.ts
 │   ├── types/
@@ -138,7 +139,8 @@ ai-pdf-assistant/
 ├── docs/
 ├── supabase/
 │   └── migrations/
-│       └── 0001_initial_schema.sql
+│       ├── 0001_initial_schema.sql
+│       └── 0002_document_storage.sql
 ├── .env.local
 ├── package.json
 └── README.md
@@ -172,8 +174,8 @@ ai-pdf-assistant/
 边界：
 
 - 上传流程编排在 service 层
-- 数据读写在 repository 层
-- 存储客户端封装在 `lib`
+- 当前阶段直接通过 Supabase client 访问 `documents` 和 Storage
+- 当前文档选择仍在前端本地保存，只负责页面联动，不承担真实持久化
 
 ### 3. PDF 处理模块
 
@@ -223,17 +225,18 @@ ai-pdf-assistant/
 
 用于保存用户基础资料。
 
-建议字段：
+当前字段：
 
 - `id`
 - `email`
+- `full_name`
 - `created_at`
 
 ### 2. documents
 
 用于保存用户上传文档及其 AI 处理结果。
 
-建议字段：
+当前字段：
 
 - `id`
 - `user_id`
@@ -241,6 +244,7 @@ ai-pdf-assistant/
 - `file_path`
 - `extracted_text`
 - `summary`
+- `processing_status`
 - `created_at`
 
 ### 3. messages

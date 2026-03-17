@@ -1,4 +1,4 @@
-export type DocumentProcessingStatus = 'Complete' | 'Pending';
+export type DocumentProcessingStatus = 'Complete' | 'Pending' | 'Failed';
 
 export interface StoredDocument {
   id: string;
@@ -8,6 +8,7 @@ export interface StoredDocument {
   fileSize: number | null;
   mimeType: string | null;
   uploadedAt: string;
+  filePath: string | null;
 }
 
 export interface UploadDocumentResult {

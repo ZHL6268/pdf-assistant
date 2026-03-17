@@ -1,19 +1,19 @@
 # Frontend Baseline
 
-This document captures how the current frontend has been aligned to the supplied PRD/TDD without implementing new product functionality.
+This document captures how the current frontend has been aligned to the supplied PRD/TDD while the project gradually replaces fake frontend workflows with real Supabase-backed infrastructure.
 
 ## Interpretation
 
 - Keep the existing repository and tech stack intact for now.
 - Use the documented MVP page map as the source of truth for UI structure.
-- Avoid adding live integrations, API contracts, or backend behavior in this step.
+- Preserve the original visual baseline while moving real integrations behind clear service boundaries.
 - Reshape the frontend so later implementation can proceed page by page and module by module.
 
 ## Current UI baseline
 
-- The active UI rendering currently lives in `src/App.tsx`
-- This was intentionally restored to the original single-file layout to preserve the exact visual baseline
-- Shared engineering foundations added in Phase 1 remain in separate modules for later incremental adoption
+- The active UI shell still preserves the original visual baseline
+- `src/App.tsx` now acts as an application shell instead of owning all business logic
+- Real auth and document services now sit behind dedicated provider, hook, and service layers
 
 ## Engineering adjustments
 
@@ -21,17 +21,17 @@ This document captures how the current frontend has been aligned to the supplied
 - Route and environment conventions added under `src/config`
 - App-wide constants added under `src/constants`
 - Page state and browser path syncing added under `src/hooks/use-app-screen.ts`
-- `App.tsx` preserves the original Tailwind-driven layout while selectively consuming shared constants
+- Real auth now runs through Supabase via `src/providers/auth-session-provider.tsx`
+- Real document upload/listing now runs through `src/services/document-service.ts`
 - `src/index.css` remains minimal so the original Tailwind utility layout renders unchanged
 
 ## Explicit non-goals
 
 - No third-party router integration
-- No Supabase integration
-- No OpenAI integration
-- No PDF parsing
-- No API implementation
-- No new business functionality
+- No OpenAI integration yet
+- No PDF parsing yet
+- No summary generation yet
+- No real document chat yet
 
 ## Phase 2 Completion
 
@@ -63,11 +63,18 @@ Phase 3 document-management frontend MVP is complete:
 - keep the browser title aligned with the active document while on detail
 - keep the existing visual baseline unchanged while making the workflow testable
 
-## Phase 4 Start
+## Current Phase Status
 
-The project has now entered Phase 4 real-auth and database baseline:
+Phase 4 is complete:
 
-- replace local fake auth state with Supabase Auth session handling
-- introduce a shared auth provider instead of per-hook local auth state
-- add a first database migration for profiles, documents, and messages
-- surface missing-environment configuration issues clearly in the auth UI
+- local fake auth has been replaced by Supabase Auth session handling
+- auth state is centralized in a shared provider
+- the project now includes a first database migration for `profiles`, `documents`, and `messages`
+- missing-environment and auth failure states are surfaced clearly in the UI
+
+Phase 5 is in progress:
+
+- the local document library has been replaced by real `documents` table reads
+- PDF uploads are routed to Supabase Storage
+- a second migration now provisions the `documents` storage bucket and policies
+- document detail content beyond the file name remains demo data until the next phase

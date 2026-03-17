@@ -3,7 +3,7 @@ import type { StoredDocument } from './document';
 export interface DocumentRowItem {
   name: string;
   date: string;
-  status: 'Complete' | 'Pending';
+  status: 'Complete' | 'Pending' | 'Failed';
 }
 
 export interface DashboardDocumentItem extends DocumentRowItem {

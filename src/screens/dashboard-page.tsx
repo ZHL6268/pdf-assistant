@@ -14,8 +14,16 @@ export function DashboardPage({
   onSelectDoc: () => void;
   onLogout: () => void;
 }) {
-  const { greeting, documents, uploadError, uploadSuccessMessage, uploadDocument, selectDocument } =
-    useDashboardViewModel();
+  const {
+    greeting,
+    documents,
+    isLibraryLoading,
+    isUploadingDocument,
+    uploadError,
+    uploadSuccessMessage,
+    uploadDocument,
+    selectDocument,
+  } = useDashboardViewModel();
   const userProfile = useUserProfileViewModel();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -109,7 +117,7 @@ export function DashboardPage({
                       return;
                     }
 
-                    uploadDocument(file);
+                    void uploadDocument(file);
                     event.currentTarget.value = '';
                   }}
                 />
@@ -117,8 +125,9 @@ export function DashboardPage({
                   className="bg-[#0d33f2] hover:bg-[#0d33f2]/90 text-white font-bold py-2.5 px-8 rounded-lg transition-all shadow-lg shadow-[#0d33f2]/20"
                   onClick={() => fileInputRef.current?.click()}
                   type="button"
+                  disabled={isUploadingDocument}
                 >
-                  Select File
+                  {isUploadingDocument ? 'Uploading...' : 'Select File'}
                 </button>
                 <p className="text-xs text-slate-400 mt-4">Supports PDF up to {MAX_UPLOAD_SIZE_MB}MB</p>
                 {uploadSuccessMessage ? (
@@ -147,7 +156,7 @@ export function DashboardPage({
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {documents.map((document) => (
-                      <Fragment key={`${document.name}-${document.date}`}>
+                      <Fragment key={document.id}>
                         <DocRow
                           {...document}
                           onOpen={(documentId) => {
@@ -157,11 +166,22 @@ export function DashboardPage({
                         />
                       </Fragment>
                     ))}
+                    {!isLibraryLoading && documents.length === 0 ? (
+                      <tr>
+                        <td className="px-6 py-8 text-sm text-slate-500" colSpan={4}>
+                          No documents uploaded yet. Upload your first PDF to populate the workspace.
+                        </td>
+                      </tr>
+                    ) : null}
                   </tbody>
                 </table>
               </div>
               <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 text-center">
-                <p className="text-sm text-slate-500">Showing {documents.length} document{documents.length === 1 ? '' : 's'}</p>
+                <p className="text-sm text-slate-500">
+                  {isLibraryLoading
+                    ? 'Loading documents...'
+                    : `Showing ${documents.length} document${documents.length === 1 ? '' : 's'}`}
+                </p>
               </div>
             </div>
           </div>

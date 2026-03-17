@@ -1,84 +1,113 @@
-import { useEffect, useState } from 'react';
-import { buildSeedDocuments } from '../services/demo-document-service';
-import { createUploadedDocument } from '../services/document-upload-service';
-import {
-  readActiveDocumentId,
-  readStoredDocuments,
-  writeActiveDocumentId,
-  writeStoredDocuments,
-} from '../services/document-storage';
+import { useCallback, useEffect, useState } from 'react';
+import { getSupabaseBrowserClient } from '../lib/supabase/client';
+import { useAuthSession } from './use-auth-session';
+import { listUserDocuments, uploadUserDocument } from '../services/document-service';
+import { readActiveDocumentId, writeActiveDocumentId } from '../services/document-storage';
 import type { StoredDocument } from '../types/document';
 
-interface InitialDocumentLibraryState {
-  documents: StoredDocument[];
-  activeDocumentId: string | null;
-}
-
-function readInitialDocuments(): StoredDocument[] {
-  const storedDocuments = readStoredDocuments();
-  if (storedDocuments.length > 0) {
-    return storedDocuments;
-  }
-
-  const seedDocuments = buildSeedDocuments();
-  writeStoredDocuments(seedDocuments);
-  return seedDocuments;
-}
-
-function readInitialActiveDocumentId(documents: StoredDocument[]): string | null {
-  const storedActiveDocumentId = readActiveDocumentId();
-  if (storedActiveDocumentId && documents.some((document) => document.id === storedActiveDocumentId)) {
-    return storedActiveDocumentId;
-  }
-
-  const fallbackDocumentId = documents[0]?.id ?? null;
-  writeActiveDocumentId(fallbackDocumentId);
-  return fallbackDocumentId;
-}
-
-function readInitialDocumentLibraryState(): InitialDocumentLibraryState {
-  const documents = readInitialDocuments();
-
-  return {
-    documents,
-    activeDocumentId: readInitialActiveDocumentId(documents),
-  };
-}
-
 export function useDocumentLibrary() {
-  const [initialState] = useState<InitialDocumentLibraryState>(() => readInitialDocumentLibraryState());
-  const [documents, setDocuments] = useState<StoredDocument[]>(initialState.documents);
-  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(initialState.activeDocumentId);
+  const { isAuthenticated, isAuthReady, isSupabaseReady, user } = useAuthSession();
+  const [documents, setDocuments] = useState<StoredDocument[]>([]);
+  // The active document id stays in local storage only for screen-to-screen UX continuity.
+  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(() => readActiveDocumentId());
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccessMessage, setUploadSuccessMessage] = useState<string | null>(null);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
+  const [isUploadingDocument, setIsUploadingDocument] = useState(false);
+
+  const syncActiveDocumentId = useCallback((nextDocuments: StoredDocument[]) => {
+    const storedActiveDocumentId = readActiveDocumentId();
+    const nextActiveDocumentId =
+      (storedActiveDocumentId &&
+      nextDocuments.some((document) => document.id === storedActiveDocumentId)
+        ? storedActiveDocumentId
+        : nextDocuments[0]?.id) ?? null;
+
+    writeActiveDocumentId(nextActiveDocumentId);
+    setActiveDocumentId(nextActiveDocumentId);
+  }, []);
+
+  const loadDocuments = useCallback(async () => {
+    if (!isAuthReady) {
+      return;
+    }
+
+    if (!isAuthenticated || !isSupabaseReady) {
+      setDocuments([]);
+      writeActiveDocumentId(null);
+      setActiveDocumentId(null);
+      return;
+    }
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setUploadError('Supabase is not configured for document access.');
+      return;
+    }
+
+    setIsLibraryLoading(true);
+
+    try {
+      const nextDocuments = await listUserDocuments(supabase);
+      setDocuments(nextDocuments);
+      syncActiveDocumentId(nextDocuments);
+      setUploadError(null);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'Documents could not be loaded.');
+    } finally {
+      setIsLibraryLoading(false);
+    }
+  }, [isAuthReady, isAuthenticated, isSupabaseReady, syncActiveDocumentId]);
 
   useEffect(() => {
     const handleStorage = () => {
-      const nextDocuments = readInitialDocuments();
-      setDocuments(nextDocuments);
-      setActiveDocumentId(readInitialActiveDocumentId(nextDocuments));
+      setActiveDocumentId(readActiveDocumentId());
     };
 
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  const uploadDocument = (file: File) => {
-    const result = createUploadedDocument(file);
+  useEffect(() => {
+    void loadDocuments();
+  }, [loadDocuments]);
 
-    if (!result.document) {
-      setUploadError(result.error);
+  const uploadDocument = async (file: File) => {
+    if (!user) {
+      setUploadError('Sign in again before uploading a document.');
       setUploadSuccessMessage(null);
       return;
     }
 
-    const nextDocuments = [result.document, ...documents];
-    writeStoredDocuments(nextDocuments);
-    writeActiveDocumentId(result.document.id);
-    setDocuments(nextDocuments);
-    setActiveDocumentId(result.document.id);
-    setUploadError(null);
-    setUploadSuccessMessage(`${result.document.name} uploaded successfully.`);
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setUploadError('Supabase is not configured for document uploads.');
+      setUploadSuccessMessage(null);
+      return;
+    }
+
+    setIsUploadingDocument(true);
+
+    try {
+      const result = await uploadUserDocument(supabase, user.id, file);
+
+      if (!result.document) {
+        setUploadError(result.error);
+        setUploadSuccessMessage(null);
+        return;
+      }
+
+      setDocuments((currentDocuments) => [
+        result.document,
+        ...currentDocuments.filter((document) => document.id !== result.document.id),
+      ]);
+      writeActiveDocumentId(result.document.id);
+      setActiveDocumentId(result.document.id);
+      setUploadError(null);
+      setUploadSuccessMessage(`${result.document.name} uploaded successfully.`);
+    } finally {
+      setIsUploadingDocument(false);
+    }
   };
 
   const selectDocument = (documentId: string) => {
@@ -94,6 +123,8 @@ export function useDocumentLibrary() {
   return {
     documents,
     activeDocument,
+    isLibraryLoading,
+    isUploadingDocument,
     uploadError,
     uploadSuccessMessage,
     uploadDocument,
