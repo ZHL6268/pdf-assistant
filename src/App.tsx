@@ -159,6 +159,10 @@ function DocumentDetailRoute() {
   const { documentId } = useParams();
   const { documents, isLibraryLoading, selectDocument } = useDocumentLibrary();
 
+  const currentDocument = documentId
+    ? documents.find((document) => document.id === documentId) ?? null
+    : null;
+
   useEffect(() => {
     if (documentId) {
       selectDocument(documentId);
@@ -178,7 +182,7 @@ function DocumentDetailRoute() {
 
   return (
     <PageTransition routeKey={`document-${documentId ?? 'unknown'}`}>
-      <DocumentDetailPage onBack={() => navigate(appRoutes.dashboard.path)} />
+      <DocumentDetailPage document={currentDocument} onBack={() => navigate(appRoutes.dashboard.path)} />
     </PageTransition>
   );
 }

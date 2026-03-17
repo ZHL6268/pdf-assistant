@@ -16,9 +16,17 @@ import { InsightItem } from '../components/insight-item';
 import { appRoutes } from '../config/routes';
 import { APP_NAME } from '../constants/app';
 import { useDocumentDetailViewModel } from '../hooks/use-document-detail-view-model';
+import type { StoredDocument } from '../types/document';
 
-export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
-  const { fileName, summary, summaryStatus, insights, chatMessages, suggestions } = useDocumentDetailViewModel();
+export function DocumentDetailPage({
+  document: activeDocument,
+  onBack,
+}: {
+  document: StoredDocument | null;
+  onBack: () => void;
+}) {
+  const { fileName, summary, summaryStatus, insights, chatMessages, suggestions } =
+    useDocumentDetailViewModel(activeDocument);
 
   useEffect(() => {
     document.title = `${fileName} | AI PDF Assistant`;

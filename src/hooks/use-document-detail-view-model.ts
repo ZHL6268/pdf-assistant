@@ -1,5 +1,5 @@
 import { documentDetailState } from '../state/demo-state';
-import { useDocumentLibrary } from './use-document-library';
+import type { StoredDocument } from '../types/document';
 
 export interface DocumentDetailViewModel {
   fileName: string;
@@ -10,8 +10,7 @@ export interface DocumentDetailViewModel {
   suggestions: typeof documentDetailState.suggestions;
 }
 
-export function useDocumentDetailViewModel(): DocumentDetailViewModel {
-  const { activeDocument } = useDocumentLibrary();
+export function useDocumentDetailViewModel(activeDocument: StoredDocument | null): DocumentDetailViewModel {
   const summary =
     activeDocument?.summary ||
     (activeDocument?.status === 'Pending'
