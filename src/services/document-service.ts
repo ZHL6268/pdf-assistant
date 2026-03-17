@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { appEnv } from '../config/env';
 import { DOCUMENTS_BUCKET_NAME, MAX_UPLOAD_SIZE_MB, SUPPORTED_FILE_TYPES } from '../constants/app';
 import type { StoredDocument, UploadDocumentResult } from '../types/document';
 
@@ -149,16 +150,36 @@ export async function processUserDocument(
   supabase: SupabaseClient,
   documentId: string,
 ): Promise<{ success: boolean; error: string | null }> {
-  const { error } = await supabase.functions.invoke('process-document', {
-    body: {
-      documentId,
-    },
-  });
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-  if (error) {
+  if (sessionError || !session) {
     return {
       success: false,
-      error: error.message,
+      error: sessionError?.message ?? 'No active session is available for document processing.',
+    };
+  }
+
+  const response = await fetch(`${appEnv.supabaseUrl}/functions/v1/process-document`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: appEnv.supabaseAnonKey,
+    },
+    body: JSON.stringify({
+      documentId,
+    }),
+  });
+
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+
+    return {
+      success: false,
+      error: payload?.error ?? `Document processing request failed with status ${response.status}.`,
     };
   }
 
