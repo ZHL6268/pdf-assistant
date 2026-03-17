@@ -17,7 +17,8 @@ export function useDocumentDetailViewModel(): DocumentDetailViewModel {
     (activeDocument?.status === 'Pending'
       ? 'This document is still being processed. Refresh in a moment to see the generated summary.'
       : activeDocument?.status === 'Failed'
-        ? 'Summary generation failed for this document. Re-upload the file after checking the PDF contents and backend configuration.'
+        ? activeDocument.processingError ||
+          'Summary generation failed for this document. Re-upload the file after checking the PDF contents and backend configuration.'
         : documentDetailState.summary);
 
   return {

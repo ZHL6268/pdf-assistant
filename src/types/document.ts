@@ -11,6 +11,7 @@ export interface StoredDocument {
   filePath: string | null;
   extractedText: string | null;
   summary: string | null;
+  processingError: string | null;
 }
 
 export interface UploadDocumentResult {

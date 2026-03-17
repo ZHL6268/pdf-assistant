@@ -148,7 +148,7 @@ Deno.serve(async (request) => {
 
   await supabase
     .from('documents')
-    .update({ processing_status: 'processing' })
+    .update({ processing_status: 'processing', processing_error: null })
     .eq('id', document.id)
     .eq('user_id', user.id);
 
@@ -170,6 +170,7 @@ Deno.serve(async (request) => {
         extracted_text: null,
         summary,
         processing_status: 'complete',
+        processing_error: null,
       })
       .eq('id', document.id)
       .eq('user_id', user.id);
@@ -188,6 +189,7 @@ Deno.serve(async (request) => {
       .from('documents')
       .update({
         processing_status: 'failed',
+        processing_error: error instanceof Error ? error.message : 'Document processing failed.',
       })
       .eq('id', document.id)
       .eq('user_id', user.id);

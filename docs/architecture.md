@@ -269,6 +269,7 @@ ai-pdf-assistant/
 - `extracted_text`
 - `summary`
 - `processing_status`
+- `processing_error`
 - `created_at`
 
 ### 3. messages

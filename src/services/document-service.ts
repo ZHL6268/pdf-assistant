@@ -10,6 +10,7 @@ interface DocumentRecord {
   extracted_text: string | null;
   summary: string | null;
   processing_status: string;
+  processing_error: string | null;
   created_at: string;
 }
 
@@ -45,6 +46,7 @@ function mapDocumentRecord(record: DocumentRecord): StoredDocument {
     filePath: record.file_path,
     extractedText: record.extracted_text,
     summary: record.summary,
+    processingError: record.processing_error,
   };
 }
 
@@ -80,7 +82,7 @@ function mapUploadErrorMessage(message: string) {
 export async function listUserDocuments(supabase: SupabaseClient): Promise<StoredDocument[]> {
   const { data, error } = await supabase
     .from('documents')
-    .select('id, title, file_path, extracted_text, summary, processing_status, created_at')
+    .select('id, title, file_path, extracted_text, summary, processing_status, processing_error, created_at')
     .order('created_at', { ascending: false })
     .returns<DocumentRecord[]>();
 
@@ -128,8 +130,9 @@ export async function uploadUserDocument(
       title: file.name,
       file_path: filePath,
       processing_status: 'uploaded',
+      processing_error: null,
     })
-    .select('id, title, file_path, extracted_text, summary, processing_status, created_at')
+    .select('id, title, file_path, extracted_text, summary, processing_status, processing_error, created_at')
     .single<DocumentRecord>();
 
   if (error || !data) {
