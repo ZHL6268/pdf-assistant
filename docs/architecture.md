@@ -200,7 +200,8 @@ ai-pdf-assistant/
 
 - 由 `supabase/functions/process-document` 承担
 - 从 Storage 下载用户 PDF
-- 提取文本后写回 `documents.extracted_text`
+- 当前实现直接将 PDF 作为输入交给 OpenAI 生成摘要
+- `documents.extracted_text` 仍保留为后续更稳健文本提取方案的扩展位
 
 ### 4. 摘要模块
 

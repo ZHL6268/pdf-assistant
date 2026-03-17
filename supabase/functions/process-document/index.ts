@@ -1,13 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
-import * as pdfjsLib from 'https://esm.sh/pdfjs-dist@4.10.38/legacy/build/pdf.mjs';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://esm.sh/pdfjs-dist@4.10.38/legacy/build/pdf.worker.mjs';
+import { corsHeaders } from '../_shared/cors.ts';
 
 interface ProcessDocumentRequest {
   documentId: string;
@@ -30,34 +22,17 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-async function extractPdfText(fileBytes: ArrayBuffer) {
-  const loadingTask = pdfjsLib.getDocument({
-    data: new Uint8Array(fileBytes),
-    disableWorker: true,
-    isEvalSupported: false,
-    useWorkerFetch: false,
-  });
+function encodeBase64(fileBytes: Uint8Array) {
+  let binary = '';
 
-  const pdfDocument = await loadingTask.promise;
-  const pages: string[] = [];
-
-  for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
-    const page = await pdfDocument.getPage(pageNumber);
-    const textContent = await page.getTextContent();
-    const text = textContent.items
-      .map((item) => ('str' in item ? item.str : ''))
-      .join(' ')
-      .trim();
-
-    if (text) {
-      pages.push(text);
-    }
+  for (const byte of fileBytes) {
+    binary += String.fromCharCode(byte);
   }
 
-  return pages.join('\n\n');
+  return btoa(binary);
 }
 
-async function generateSummary(extractedText: string) {
+async function generateSummary(fileBytes: Uint8Array, fileName: string) {
   const apiKey = Deno.env.get('OPENAI_API_KEY');
   if (!apiKey) {
     throw new Error('OPENAI_API_KEY is not configured.');
@@ -70,7 +45,7 @@ async function generateSummary(extractedText: string) {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: Deno.env.get('OPENAI_MODEL') || 'gpt-5-mini',
+      model: Deno.env.get('OPENAI_MODEL') || 'gpt-4o-mini',
       input: [
         {
           role: 'developer',
@@ -86,8 +61,13 @@ async function generateSummary(extractedText: string) {
           role: 'user',
           content: [
             {
+              type: 'input_file',
+              filename: fileName,
+              file_data: encodeBase64(fileBytes),
+            },
+            {
               type: 'input_text',
-              text: `Summarize this PDF content:\n\n${extractedText}`,
+              text: 'Summarize this PDF. Focus on the core objective, major findings, deadlines, financial figures, and any concrete actions.',
             },
           ],
         },
@@ -181,17 +161,13 @@ Deno.serve(async (request) => {
       throw new Error(downloadError?.message || 'Document file could not be downloaded.');
     }
 
-    const extractedText = await extractPdfText(await fileData.arrayBuffer());
-    if (!extractedText.trim()) {
-      throw new Error('No readable text was found in this PDF.');
-    }
-
-    const summary = await generateSummary(extractedText);
+    const fileBytes = new Uint8Array(await fileData.arrayBuffer());
+    const summary = await generateSummary(fileBytes, document.title);
 
     const { error: updateError } = await supabase
       .from('documents')
       .update({
-        extracted_text: extractedText,
+        extracted_text: null,
         summary,
         processing_status: 'complete',
       })
