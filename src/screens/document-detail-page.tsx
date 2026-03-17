@@ -18,7 +18,7 @@ import { APP_NAME } from '../constants/app';
 import { useDocumentDetailViewModel } from '../hooks/use-document-detail-view-model';
 
 export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
-  const { fileName, summary, insights, chatMessages, suggestions } = useDocumentDetailViewModel();
+  const { fileName, summary, summaryStatus, insights, chatMessages, suggestions } = useDocumentDetailViewModel();
 
   useEffect(() => {
     document.title = `${fileName} | AI PDF Assistant`;
@@ -76,9 +76,22 @@ export function DocumentDetailPage({ onBack }: { onBack: () => void }) {
 
           <div className="grid grid-cols-1 gap-6">
             <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
                 <FileText size={24} className="text-[#0d33f2]" />
                 <h3 className="text-lg font-bold text-slate-900">Overall Summary</h3>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                    summaryStatus === 'Complete'
+                      ? 'bg-green-100 text-green-700'
+                      : summaryStatus === 'Failed'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-amber-100 text-amber-700'
+                  }`}
+                >
+                  {summaryStatus}
+                </span>
               </div>
               <p className="text-slate-600 leading-relaxed">{summary}</p>
             </div>

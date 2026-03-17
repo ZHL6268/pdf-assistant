@@ -4,6 +4,7 @@ import { useDocumentLibrary } from './use-document-library';
 export interface DocumentDetailViewModel {
   fileName: string;
   summary: string;
+  summaryStatus: 'Complete' | 'Pending' | 'Failed';
   insights: typeof documentDetailState.insights;
   chatMessages: typeof documentDetailState.chatMessages;
   suggestions: typeof documentDetailState.suggestions;
@@ -11,10 +12,18 @@ export interface DocumentDetailViewModel {
 
 export function useDocumentDetailViewModel(): DocumentDetailViewModel {
   const { activeDocument } = useDocumentLibrary();
+  const summary =
+    activeDocument?.summary ||
+    (activeDocument?.status === 'Pending'
+      ? 'This document is still being processed. Refresh in a moment to see the generated summary.'
+      : activeDocument?.status === 'Failed'
+        ? 'Summary generation failed for this document. Re-upload the file after checking the PDF contents and backend configuration.'
+        : documentDetailState.summary);
 
   return {
     fileName: activeDocument?.name ?? documentDetailState.fileName,
-    summary: documentDetailState.summary,
+    summary,
+    summaryStatus: activeDocument?.status ?? 'Complete',
     insights: documentDetailState.insights,
     chatMessages: documentDetailState.chatMessages,
     suggestions: documentDetailState.suggestions,

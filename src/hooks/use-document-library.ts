@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getSupabaseBrowserClient } from '../lib/supabase/client';
 import { useAuthSession } from './use-auth-session';
-import { listUserDocuments, uploadUserDocument } from '../services/document-service';
+import { listUserDocuments, processUserDocument, uploadUserDocument } from '../services/document-service';
 import { readActiveDocumentId, writeActiveDocumentId } from '../services/document-storage';
 import type { StoredDocument } from '../types/document';
 
@@ -104,7 +104,20 @@ export function useDocumentLibrary() {
       writeActiveDocumentId(result.document.id);
       setActiveDocumentId(result.document.id);
       setUploadError(null);
-      setUploadSuccessMessage(`${result.document.name} uploaded successfully.`);
+      setUploadSuccessMessage(`${result.document.name} uploaded successfully. Summary generation has started.`);
+
+      const processingResult = await processUserDocument(supabase, result.document.id);
+      const nextDocuments = await listUserDocuments(supabase);
+      setDocuments(nextDocuments);
+      syncActiveDocumentId(nextDocuments);
+
+      if (!processingResult.success) {
+        setUploadError(processingResult.error ?? 'Document processing failed.');
+        setUploadSuccessMessage(null);
+        return;
+      }
+
+      setUploadSuccessMessage(`${result.document.name} uploaded and summarized successfully.`);
     } finally {
       setIsUploadingDocument(false);
     }

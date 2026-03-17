@@ -9,6 +9,8 @@ export interface StoredDocument {
   mimeType: string | null;
   uploadedAt: string;
   filePath: string | null;
+  extractedText: string | null;
+  summary: string | null;
 }
 
 export interface UploadDocumentResult {

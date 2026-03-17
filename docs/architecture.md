@@ -16,6 +16,10 @@
   - 用于统一图标表达，减少自定义图标维护成本
 - Motion
   - 用于轻量页面切换与交互动效，保持产品演示质量
+- Supabase Auth / Database / Storage / Functions
+  - 当前真实认证、文档存储、文档列表和文档处理后端都依赖 Supabase 体系
+- OpenAI API
+  - 当前真实摘要生成通过 Supabase Edge Function 调用 OpenAI Responses API
 
 ### 目标架构技术栈
 
@@ -34,7 +38,7 @@
 - Vercel
   - 适合承载 Next.js 应用部署与演示环境
 
-当前阶段不直接迁移到目标栈，原因是本轮工作重点是先把结构、认证和文档链路分阶段收口，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位，第二阶段已完成应用壳层整理，第三阶段已完成本地文档管理前端 MVP，第四阶段已完成真实认证与数据库基线，第五阶段已开始将文档上传和文档列表替换为 Supabase Storage + `documents` 表。当前展示层为了保持原始视觉效果，仍沿用原始视觉结构，但主入口组件已经收敛为应用壳层，页面模板、基础展示单元、应用流程编排、展示数据适配层、真实认证基础设施和真实文档服务边界都已拆到独立模块中。
+当前阶段不直接迁移到目标栈，原因是本轮工作重点是先把结构、认证和文档链路分阶段收口，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位，第二阶段已完成应用壳层整理，第三阶段已完成本地文档管理前端 MVP，第四阶段已完成真实认证与数据库基线，第五阶段已将文档上传和文档列表替换为 Supabase Storage + `documents` 表，第六阶段已增加 Supabase Edge Function 处理 PDF 文本提取与摘要生成。当前展示层为了保持原始视觉效果，仍沿用原始视觉结构，但主入口组件已经收敛为应用壳层，页面模板、基础展示单元、应用流程编排、展示数据适配层、真实认证基础设施、真实文档服务边界和文档处理后端都已拆到独立模块中。
 
 ## 项目目录结构
 
@@ -50,6 +54,7 @@ ai-pdf-assistant/
 │   ├── phase-3-plan.md
 │   ├── phase-4-plan.md
 │   ├── phase-5-plan.md
+│   ├── phase-6-plan.md
 │   └── prd.md
 ├── src/
 │   ├── components/
@@ -134,10 +139,16 @@ ai-pdf-assistant/
 │   ├── utils/
 │   └── middleware.ts
 ├── supabase/
+│   ├── functions/
+│   │   ├── _shared/
+│   │   └── process-document/
 │   ├── migrations/
 │   └── seed.sql
 ├── docs/
 ├── supabase/
+│   ├── functions/
+│   │   ├── _shared/
+│   │   └── process-document/
 │   └── migrations/
 │       ├── 0001_initial_schema.sql
 │       └── 0002_document_storage.sql
@@ -185,6 +196,12 @@ ai-pdf-assistant/
 - 对提取后的文本做基础清洗
 - 将结果提供给摘要与问答模块
 
+当前实现：
+
+- 由 `supabase/functions/process-document` 承担
+- 从 Storage 下载用户 PDF
+- 提取文本后写回 `documents.extracted_text`
+
 ### 4. 摘要模块
 
 职责：
@@ -192,6 +209,12 @@ ai-pdf-assistant/
 - 构建摘要 prompt
 - 调用 OpenAI 生成摘要
 - 将摘要保存回文档记录
+
+当前实现：
+
+- 由 `process-document` Edge Function 内部调用 OpenAI Responses API
+- 摘要结果写回 `documents.summary`
+- 前端 detail 页优先读取真实 summary，失败时展示状态文案
 
 ### 5. 文档问答模块
 

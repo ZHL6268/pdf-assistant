@@ -6,6 +6,8 @@ interface DocumentRecord {
   id: string;
   title: string;
   file_path: string;
+  extracted_text: string | null;
+  summary: string | null;
   processing_status: string;
   created_at: string;
 }
@@ -40,6 +42,8 @@ function mapDocumentRecord(record: DocumentRecord): StoredDocument {
     mimeType: 'application/pdf',
     uploadedAt: record.created_at,
     filePath: record.file_path,
+    extractedText: record.extracted_text,
+    summary: record.summary,
   };
 }
 
@@ -75,7 +79,7 @@ function mapUploadErrorMessage(message: string) {
 export async function listUserDocuments(supabase: SupabaseClient): Promise<StoredDocument[]> {
   const { data, error } = await supabase
     .from('documents')
-    .select('id, title, file_path, processing_status, created_at')
+    .select('id, title, file_path, extracted_text, summary, processing_status, created_at')
     .order('created_at', { ascending: false })
     .returns<DocumentRecord[]>();
 
@@ -122,9 +126,9 @@ export async function uploadUserDocument(
       user_id: userId,
       title: file.name,
       file_path: filePath,
-      processing_status: 'complete',
+      processing_status: 'uploaded',
     })
-    .select('id, title, file_path, processing_status, created_at')
+    .select('id, title, file_path, extracted_text, summary, processing_status, created_at')
     .single<DocumentRecord>();
 
   if (error || !data) {
@@ -137,6 +141,29 @@ export async function uploadUserDocument(
 
   return {
     document: mapDocumentRecord(data),
+    error: null,
+  };
+}
+
+export async function processUserDocument(
+  supabase: SupabaseClient,
+  documentId: string,
+): Promise<{ success: boolean; error: string | null }> {
+  const { error } = await supabase.functions.invoke('process-document', {
+    body: {
+      documentId,
+    },
+  });
+
+  if (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+
+  return {
+    success: true,
     error: null,
   };
 }

@@ -28,10 +28,9 @@ This document captures how the current frontend has been aligned to the supplied
 ## Explicit non-goals
 
 - No third-party router integration
-- No OpenAI integration yet
-- No PDF parsing yet
-- No summary generation yet
 - No real document chat yet
+- No vector retrieval yet
+- No formal router migration yet
 
 ## Phase 2 Completion
 
@@ -72,9 +71,16 @@ Phase 4 is complete:
 - the project now includes a first database migration for `profiles`, `documents`, and `messages`
 - missing-environment and auth failure states are surfaced clearly in the UI
 
-Phase 5 is in progress:
+Phase 5 is complete:
 
 - the local document library has been replaced by real `documents` table reads
 - PDF uploads are routed to Supabase Storage
 - a second migration now provisions the `documents` storage bucket and policies
-- document detail content beyond the file name remains demo data until the next phase
+- dashboard reads and uploads now use real backend data
+
+Phase 6 is in progress:
+
+- a Supabase Edge Function now owns PDF text extraction and summary generation
+- uploads move through real `uploaded / processing / complete / failed` states
+- document detail now prefers real `summary` data from the database
+- insight cards and chat remain demo content until the next phase
