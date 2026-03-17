@@ -1,6 +1,13 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 import * as pdfjsLib from 'https://esm.sh/pdfjs-dist@4.10.38/legacy/build/pdf.mjs';
-import { corsHeaders } from '../_shared/cors.ts';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://esm.sh/pdfjs-dist@4.10.38/legacy/build/pdf.worker.mjs';
 
 interface ProcessDocumentRequest {
   documentId: string;
@@ -26,6 +33,7 @@ function jsonResponse(body: unknown, status = 200) {
 async function extractPdfText(fileBytes: ArrayBuffer) {
   const loadingTask = pdfjsLib.getDocument({
     data: new Uint8Array(fileBytes),
+    disableWorker: true,
     isEvalSupported: false,
     useWorkerFetch: false,
   });
