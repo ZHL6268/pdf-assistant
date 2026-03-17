@@ -75,6 +75,7 @@ async function hydrateAppSession(session: Session | null, supabase: ReturnType<t
     return null;
   }
 
+  // Auth metadata is useful as a fallback, but the app should prefer the profile row once it exists.
   const profileBackedUser = await fetchUserProfile(supabase, mappedSession.user);
   return { user: profileBackedUser };
 }
@@ -141,6 +142,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       const fallbackSession = getFallbackAppSession(nextSession);
       setSession(fallbackSession);
 
+      // Hydrate against `profiles` after every auth event so UI labels stay aligned with database-backed user data.
       void hydrateAppSession(nextSession, supabase)
         .then((hydratedSession) => {
           setSession(hydratedSession ?? fallbackSession);

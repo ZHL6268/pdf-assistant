@@ -1,89 +1,37 @@
 # Phase 2 Plan
 
-## 目标
+## Goal
 
-第二阶段聚焦前端应用壳层，目标是在不破坏当前原始视觉效果的前提下，把当前页面切换从临时本地状态推进到更接近真实产品的导航基础。
+Phase 2 focused on the frontend application shell. The goal was to move page navigation and flow control from temporary local state toward a more realistic product navigation model without breaking the original visual baseline.
 
-## 范围
+## Scope
 
-1. 清理冗余代码和无效依赖
-   - 删除未参与运行的旧组件和 mock 层
-   - 删除无用依赖，降低维护成本
+1. Clean dead code and unused dependencies
+2. Establish navigation foundations
+3. Establish the frontend auth boundary
+4. Keep project documents synchronized
+5. Move page-level display state out of `App.tsx`
+6. Split page templates and display components
+7. Centralize app flow control
+8. Introduce page-level view-model boundaries
+9. Introduce a profile view-model boundary
+10. Move auth persistence details behind service boundaries
 
-2. 建立页面导航基础
-   - 将屏幕状态和路径定义统一到共享路由配置
-   - 支持浏览器地址变化与页面状态同步
-   - 统一页面中的导航交互，避免无效 `#` 跳转
-   - 补充页面标题同步
-   - 非法路径自动归一化到合法页面
-   - 为后续真实路由迁移保留稳定边界
+## Non-Goals
 
-3. 建立认证前端边界
-   - 增加本地会话状态容器
-   - 增加受保护页面守卫
-   - 保留登录和注册两个公开认证入口
-   - 支持认证后回到原本目标页面
-   - 为后续 Supabase Auth 接入预留统一边界
+- no backend auth integration yet
+- no real document detail loading yet
+- no visual redesign
 
-4. 继续保持文档同步
-   - 更新 README、Architecture、Baseline 文档
-   - 明确当前第二阶段的真实代码状态
+## Done Criteria
 
-5. 收敛页面级展示状态
-   - 将 dashboard 和 detail 的演示数据移出主页面文件
-   - 降低 `App.tsx` 的硬编码密度
-   - 为后续真实服务替换提供稳定数据边界
+- page navigation is driven by shared route configuration
+- browser location reflects current page state
+- protected routes and post-auth redirects work
+- `App.tsx` is reduced to an application shell
+- page components no longer depend directly on raw demo-state sources
+- project documents match the repository state
 
-6. 收敛页面与展示组件边界
-   - 将 landing、auth、dashboard、detail 页面从 `App.tsx` 中拆出
-   - 将可复用展示单元拆到独立组件文件
-   - 让 `App.tsx` 只保留应用壳层、路由切换和会话协调逻辑
+## Current Status
 
-7. 收敛应用流程控制边界
-   - 将受保护页守卫、认证回跳和页面动作编排从 `App.tsx` 中抽离
-   - 将应用壳层压缩为纯渲染入口
-   - 为后续接真实 router 和真实 auth client 保留稳定流程层
-
-8. 建立页面 view-model 边界
-   - 页面组件不再直接读取演示态源数据
-   - 用独立 hook 统一提供 dashboard 和 detail 所需展示数据
-   - 为后续接真实查询结果保留单一替换点
-
-9. 收敛用户展示信息边界
-   - 页面组件不直接消费认证容器返回结构
-   - 用独立 profile view-model 适配显示名称和计划信息
-   - 为后续接真实用户资料模型保留稳定界面层
-
-10. 收敛认证基础服务边界
-   - 将本地认证持久化读写从 hook 中移出
-   - 将演示态 session 构建逻辑独立到服务层
-   - 为后续替换真实认证 SDK 保留最小修改面
-
-## 非目标
-
-- 不接入真实 React Router 或 Next.js Router
-- 不接入认证后端
-- 不实现真实文档详情数据加载
-- 不改变当前页面的视觉结构
-
-## 完成标准
-
-- 当前仓库无明显死代码和未使用模块
-- 当前页面跳转由共享路由配置驱动
-- 浏览器路径可反映当前页面状态
-- 页面标题会随当前页面变化
-- 非法路径会自动回退到 landing
-- 未登录访问受保护页面会被拉回登录页
-- 登录和登出会更新本地会话状态
-- 登录成功后可回到原本想访问的受保护页面
-- 页面级演示数据不再散落在主页面文件中
-- `App.tsx` 不再承载大段页面模板
-- `App.tsx` 不再直接持有主要流程控制逻辑
-- 页面组件不再直接依赖演示态源文件
-- 页面组件不再直接依赖原始认证用户结构
-- 认证 hook 不再直接承载存储读写和演示 session 构造细节
-- 文档与仓库状态一致
-
-## 当前状态
-
-第二阶段已完成。当前仓库已经具备稳定的前端应用壳层、页面边界、认证演示边界和展示数据适配边界，后续可以进入真实功能接入阶段。
+Phase 2 is complete. The repository now has a stable application shell, page boundaries, auth-shell behavior, and view-model boundaries that supported the later migration to real routing and backend integrations.

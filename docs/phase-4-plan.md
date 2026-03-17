@@ -1,48 +1,29 @@
 # Phase 4 Plan
 
-## 目标
+## Goal
 
-第四阶段聚焦真实认证与数据库基线，目标是把现有 fake auth 替换为 Supabase Auth，并建立最小可用的数据库与权限模型。
+Phase 4 focused on real authentication and the database baseline. The goal was to replace fake auth with Supabase Auth and introduce the minimum viable schema and permission model.
 
-## 范围
+## Scope
 
-1. 接入 Supabase client
-   - 增加浏览器端 Supabase client 边界
-   - 将认证逻辑集中到全局 provider
-   - 为后续数据库和 storage 调用复用同一基础设施
+1. Add the Supabase browser client boundary
+2. Replace fake auth with real Supabase auth calls
+3. Create database and RLS baseline
+4. Add configuration and explicit error states
+5. Automatically sync user profiles
 
-2. 替换 fake auth
-   - 登录改为 `signInWithPassword`
-   - 注册改为 `signUp`
-   - 登出改为 `signOut`
-   - 前端认证状态改为真实 session 驱动
+## Non-Goals
 
-3. 建立数据库与权限基线
-   - 创建 `profiles`、`documents`、`messages` 表
-   - 建立基础 RLS policy
-   - 为后续文档上传、摘要、聊天落地真实数据结构
+- no real document upload yet
+- no real PDF parsing yet
+- no real summary generation yet
+- no real chat persistence yet
 
-4. 补充配置与错误态
-   - 为未配置 Supabase 的环境提供明确提示
-   - 更新 README、Architecture 与阶段文档
+## Done Criteria
 
-5. 建立用户资料自动同步
-   - 注册成功后自动写入 `profiles`
-   - 避免后续 documents / messages 外键因缺少 profile 而失败
-   - 登录后优先从 `profiles` 读取资料，而不是只依赖 auth metadata
-
-## 非目标
-
-- 不实现真实文档上传到 Storage
-- 不实现真实 PDF 解析
-- 不实现真实摘要生成
-- 不实现真实聊天持久化
-
-## 完成标准
-
-- 项目中已接入 `@supabase/supabase-js`
-- 登录/注册/登出链路切换为 Supabase Auth
-- 缺失 Supabase 配置时界面会给出明确信息
-- 仓库中存在可执行的数据库 schema / RLS 基线
-- 注册后 `profiles` 可自动落库
-- 文档与代码状态一致
+- `@supabase/supabase-js` is integrated
+- sign in, sign up, and sign out use Supabase Auth
+- missing Supabase configuration is surfaced clearly in the UI
+- the repository contains executable schema and RLS baseline files
+- `profiles` is populated automatically after signup
+- project documents match the code state

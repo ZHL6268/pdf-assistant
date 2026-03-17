@@ -1,49 +1,32 @@
 # Phase 3 Plan
 
-## 目标
+## Goal
 
-第三阶段聚焦文档管理前端 MVP，目标是在不接入真实后端的前提下，让 dashboard 上传入口、文档列表和当前文档选择形成真实可交互的本地闭环。
+Phase 3 focused on a document-management frontend MVP before a real backend was connected. The goal was to make dashboard upload, document listing, and current-document selection genuinely interactive in the browser.
 
-## 范围
+## Scope
 
-1. 建立本地文档库边界
-   - 将 dashboard 演示文档迁移为本地持久化文档库的初始种子
-   - 增加当前选中文档记录
-   - 为后续真实文档仓储替换保留服务边界
+1. Create a local document-library boundary
+2. Add upload UI capability
+3. Add document-detail continuity
+4. Keep project documents synchronized
 
-2. 建立上传前端能力
-   - 让 upload 按钮接入真实文件选择
-   - 增加 PDF 类型校验
-   - 增加文件大小校验
-   - 上传成功后文档列表即时更新
+## Non-Goals
 
-3. 建立文档详情联动
-   - dashboard 点击 open 时记录当前文档
-   - document detail 页面读取当前选中文档
-   - 浏览器标题跟当前文档名同步
-   - 保持现有 detail 页面视觉结构不变
+- no Supabase Storage yet
+- no server-side PDF processing
+- no real summary generation
+- no real chat persistence
 
-4. 保持文档同步
-   - 更新 README、Architecture、Baseline 文档
-   - 如代码状态变化，及时同步 phase 文档
+## Done Criteria
 
-## 非目标
+- the dashboard upload button can select a local PDF
+- invalid file types or oversized files show clear errors
+- successful uploads appear in the dashboard list
+- the opened document is reflected in the detail view and browser title
+- data persists across refreshes
+- project documents match the code state
 
-- 不接入 Supabase Storage
-- 不上传真实文件到服务端
-- 不实现真实 PDF 文本提取
-- 不实现真实摘要生成
-- 不实现真实聊天持久化
+## Current Status
 
-## 完成标准
-
-- dashboard 上传按钮可选择本地 PDF
-- 非 PDF 或超限文件会出现明确错误提示
-- 上传成功后文档会进入 dashboard 列表
-- dashboard 打开的文档会同步到 detail 页面标题
-- 文档列表在刷新后仍保留
-- 项目文档与代码状态一致
-
-## 当前状态
-
-第三阶段已完成。当前仓库已经具备本地可测试的文档上传、文档列表持久化和当前文档详情联动，为下一阶段接入真实后端与 AI 能力打下前端基础。
+Phase 3 is complete. The repository gained a testable local document workflow that later served as the bridge to real backend integration.

@@ -1,55 +1,63 @@
 # Architecture
 
-## 技术栈选择及原因
+## 1. Technology Choices and Rationale
 
-### 当前实现技术栈
+### Current Stack
 
 - React 19
-  - 当前仓库已经基于 React 构建，适合继续完成前端结构重整和页面组件拆分
+  - The app already runs on React and benefits from a component-driven UI structure.
 - TypeScript
-  - 提高共享类型、接口边界和模块协作的可维护性
+  - Enforces clearer boundaries across services, hooks, and shared models.
 - Vite
-  - 启动和构建速度快，适合当前前端整理与快速迭代阶段
+  - Keeps local iteration and production builds fast.
 - Tailwind CSS v4
-  - 适合快速建立统一设计 token 和布局体系
-- Lucide React
-  - 用于统一图标表达，减少自定义图标维护成本
-- Motion
-  - 用于轻量页面切换与交互动效，保持产品演示质量
+  - Preserves the current visual baseline while keeping styling changes lightweight.
 - React Router
-  - 当前正式路由、受保护页面和登录回跳都由 `react-router-dom` 承担
+  - Handles real routing, protected pages, and post-auth redirects.
 - Supabase Auth / Database / Storage / Functions
-  - 当前真实认证、文档存储、文档列表和文档处理后端都依赖 Supabase 体系
+  - Powers authentication, persistence, file storage, and backend workflows.
 - OpenAI API
-  - 当前真实摘要生成和单文档问答都通过 Supabase Edge Function 调用 OpenAI Responses API
+  - Used through Supabase Edge Functions for summaries and single-document chat.
+- Lucide React and Motion
+  - Support icons and lightweight transitions without large custom UI overhead.
 
-### 目标架构技术栈
+### Target Stack Direction
 
 - Next.js
-  - 统一前后端边界，便于后续承载 route handlers、server actions 和页面级数据加载
-- Supabase Auth
-  - 以较低成本落地用户认证和会话管理
-- Supabase PostgreSQL
-  - 满足文档、消息和用户数据持久化需求
-- Supabase Storage
-  - 适合托管用户上传的 PDF 文件
+  - Better long-term home for frontend and backend boundaries if the project grows.
+- Supabase Auth / Database / Storage
+  - Remains the primary backend platform for MVP operations.
+- Supabase Edge Functions
+  - Continues to host document-processing and chat workflows.
 - OpenAI API
-  - 用于摘要生成与基于文档内容的问答
-- PDF 解析库
-  - 用于服务端提取 PDF 文本内容
+  - Continues to power document-level intelligence.
 - Vercel
-  - 适合承载 Next.js 应用部署与演示环境
+  - Natural deployment target if the app later moves to Next.js.
 
-当前阶段不直接迁移到目标栈，原因是本轮工作重点是先把结构、认证和文档链路分阶段收口，避免功能实现和结构重构混在一起，增加返工成本。第一阶段已补齐共享配置、环境变量约定和 API 边界占位，第二阶段已完成应用壳层整理，第三阶段已完成本地文档管理前端 MVP，第四阶段已完成真实认证与数据库基线，第五阶段已将文档上传和文档列表替换为 Supabase Storage + `documents` 表，第六阶段已增加 Supabase Edge Function 处理真实摘要生成，第七阶段已增加单文档真实问答与消息持久化，第八阶段正在做交互收尾和稳定性整理。当前展示层为了保持原始视觉效果，仍沿用原始视觉结构，但主入口组件已经收敛为应用壳层，页面模板、基础展示单元、应用流程编排、展示数据适配层、真实认证基础设施、真实文档服务边界和文档处理后端都已拆到独立模块中。
+### Why the Project Has Not Migrated Yet
 
-## 项目目录结构
+The current strategy has been to stabilize the MVP in place first:
 
-### 当前目录结构
+- Phase 1 established engineering conventions
+- Phase 2 stabilized routing and app-shell boundaries
+- Phase 3 made document management interactive
+- Phase 4 introduced real auth and schema
+- Phase 5 connected real upload and document storage
+- Phase 6 introduced real summary generation
+- Phase 7 introduced real document chat
+- Phase 8 is reducing placeholder interactions and tightening delivery readiness
+
+That sequence reduced rework while the product moved from demo behavior to real backend-backed capability.
+
+## 2. Project Structure
+
+### Current Repository Structure
 
 ```text
 ai-pdf-assistant/
 ├── docs/
 │   ├── architecture.md
+│   ├── deployment-checklist.md
 │   ├── frontend-baseline.md
 │   ├── phase-1-plan.md
 │   ├── phase-2-plan.md
@@ -58,215 +66,155 @@ ai-pdf-assistant/
 │   ├── phase-5-plan.md
 │   ├── phase-6-plan.md
 │   ├── phase-7-plan.md
+│   ├── phase-8-plan.md
 │   └── prd.md
 ├── src/
 │   ├── components/
-│   │   ├── chat-message.tsx
-│   │   ├── doc-row.tsx
-│   │   ├── feature-card.tsx
-│   │   ├── insight-item.tsx
-│   │   └── placeholder-button.tsx
 │   ├── config/
-│   │   ├── env.ts
-│   │   └── routes.ts
 │   ├── constants/
-│   │   └── app.ts
 │   ├── hooks/
-│   │   ├── use-auth-session.ts
-│   │   ├── use-dashboard-view-model.ts
-│   │   ├── use-document-chat.ts
-│   │   ├── use-document-library.ts
-│   │   ├── use-document-detail-view-model.ts
-│   │   └── use-user-profile-view-model.ts
-│   ├── screens/
-│   │   ├── auth-page.tsx
-│   │   ├── dashboard-page.tsx
-│   │   ├── document-detail-page.tsx
-│   │   └── landing-page.tsx
 │   ├── lib/
-│   │   └── supabase/
-│   │       └── client.ts
 │   ├── providers/
-│   │   └── auth-session-provider.tsx
+│   ├── screens/
 │   ├── services/
-│   │   ├── document-service.ts
-│   │   ├── document-storage.ts
-│   │   ├── message-service.ts
-│   │   └── profile-service.ts
 │   ├── state/
-│   │   └── demo-state.ts
 │   ├── types/
-│   │   ├── api.ts
-│   │   ├── auth.ts
-│   │   ├── document.ts
-│   │   ├── ui-state.ts
-│   │   └── user-profile.ts
-│   ├── vite-env.d.ts
 │   ├── App.tsx
 │   ├── index.css
 │   └── main.tsx
+├── supabase/
+│   ├── functions/
+│   │   ├── chat-document/
+│   │   └── process-document/
+│   └── migrations/
 ├── README.md
 ├── package.json
 ├── tsconfig.json
 └── vite.config.ts
 ```
 
-### 目标目录结构
+### Target Structure Direction
 
 ```text
 ai-pdf-assistant/
-├── public/
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/
-│   │   ├── (dashboard)/
-│   │   ├── api/
-│   │   ├── layout.tsx
-│   │   └── page.tsx
 │   ├── components/
-│   │   ├── ui/
-│   │   ├── auth/
-│   │   ├── dashboard/
-│   │   ├── document/
-│   │   └── layout/
 │   ├── lib/
-│   │   ├── supabase/
-│   │   ├── openai/
-│   │   ├── pdf/
-│   │   └── validators/
 │   ├── services/
 │   ├── repositories/
 │   ├── prompts/
 │   ├── types/
-│   ├── utils/
-│   └── middleware.ts
-├── docs/
+│   └── utils/
 ├── supabase/
 │   ├── functions/
-│   │   ├── chat-document/
-│   │   └── process-document/
 │   └── migrations/
-│       ├── 0001_initial_schema.sql
-│       ├── 0002_document_storage.sql
-│       ├── 0003_document_processing_error.sql
-│       └── 0004_message_indexes.sql
-├── .env.local
-├── package.json
+├── docs/
 └── README.md
 ```
 
-## 核心模块说明
+The current repository is intentionally still simple. The important point is that the project now has clear boundaries rather than a single-file demo architecture.
 
-### 1. 认证模块
+## 3. Core Modules
 
-职责：
+### Authentication
 
-- 用户注册、登录、登出
-- 会话管理
-- 受保护页面访问控制
+Responsibilities:
 
-边界：
+- sign up
+- sign in
+- sign out
+- session hydration
+- protected route access
 
-- 页面层只处理表单与状态展示
-- 认证逻辑放在服务层
-- 第三方认证客户端放在 `lib/supabase`
-- 页面保护和登录后回跳由 `react-router-dom` 路由层处理
+Current implementation:
 
-### 2. 文档管理模块
+- provider: `src/providers/auth-session-provider.tsx`
+- hook surface: `src/hooks/use-auth-session.ts`
+- auth redirects handled at the router layer
 
-职责：
+### Document Management
 
-- PDF 上传
-- 服务端校验文件类型和大小
-- 创建文档记录
-- 展示 dashboard 文档列表
+Responsibilities:
 
-边界：
+- PDF upload
+- validation
+- dashboard listing
+- active document continuity between dashboard and detail
 
-- 上传流程编排在 service 层
-- 当前阶段直接通过 Supabase client 访问 `documents` 和 Storage
-- 当前文档选择仍在前端本地保存，只负责页面联动，不承担真实持久化
+Current implementation:
 
-### 3. PDF 处理模块
+- `src/services/document-service.ts`
+- `src/hooks/use-document-library.ts`
+- files stored in Supabase Storage
+- metadata stored in `documents`
 
-职责：
+### Summary Processing
 
-- 解析 PDF 文本
-- 对提取后的文本做基础清洗
-- 将结果提供给摘要与问答模块
+Responsibilities:
 
-当前实现：
+- trigger document processing
+- generate a summary
+- persist result and status
 
-- 由 `supabase/functions/process-document` 承担
-- 从 Storage 下载用户 PDF
-- 当前实现直接将 PDF 作为输入交给 OpenAI 生成摘要
-- `documents.extracted_text` 仍保留为后续更稳健文本提取方案的扩展位
+Current implementation:
 
-### 4. 摘要模块
+- `supabase/functions/process-document/index.ts`
+- PDF is uploaded to OpenAI Files API
+- summary is generated through Responses API
+- results are stored in `documents.summary`
 
-职责：
+### Document Chat
 
-- 构建摘要 prompt
-- 调用 OpenAI 生成摘要
-- 将摘要保存回文档记录
+Responsibilities:
 
-当前实现：
+- load message history
+- send a question for one document
+- return a grounded answer
+- persist both user and assistant messages
 
-- 由 `process-document` Edge Function 先上传 PDF 到 OpenAI Files API，再调用 Responses API
-- 摘要结果写回 `documents.summary`
-- 前端 detail 页优先读取真实 summary，失败时展示状态文案
+Current implementation:
 
-### 5. 文档问答模块
+- frontend service: `src/services/message-service.ts`
+- frontend hook: `src/hooks/use-document-chat.ts`
+- backend function: `supabase/functions/chat-document/index.ts`
+- history stored in `messages`
 
-职责：
+### UI Layer
 
-- 接收用户问题
-- 构建基于文档内容的问答 prompt
-- 持久化消息历史
-- 返回 grounded answer
+Responsibilities:
 
-当前实现：
+- compose screens
+- keep styling consistent with the original baseline
+- avoid putting backend logic directly in presentational components
 
-- 由 `supabase/functions/chat-document` 承担
-- 每次问答会校验文档归属，并读取最近消息历史
-- 当前实现会将 PDF 与最近问答上下文一起发送给 OpenAI Responses API
-- 成功回答后会把 `user / assistant` 消息写入 `messages`
+Current implementation:
 
-### 6. UI 组件模块
+- pages live in `src/screens`
+- shared display blocks live in `src/components`
 
-职责：
+## 4. Data Model Design
 
-- 提供可复用的页面、表单、表格、状态展示组件
-- 保持页面层只做组合而不是堆砌业务逻辑
+### profiles
 
-### 7. 共享能力模块
+Purpose:
 
-职责：
+- stores user profile information associated with auth users
 
-- 类型定义
-- 环境变量读取
-- 校验器
-- 常量
-- 工具函数
-
-## 数据模型设计
-
-### 1. profiles
-
-用于保存用户基础资料。
-
-当前字段：
+Current fields:
 
 - `id`
 - `email`
 - `full_name`
 - `created_at`
 
-### 2. documents
+### documents
 
-用于保存用户上传文档及其 AI 处理结果。
+Purpose:
 
-当前字段：
+- stores uploaded document metadata, summary output, and processing state
+
+Current fields:
 
 - `id`
 - `user_id`
@@ -278,11 +226,13 @@ ai-pdf-assistant/
 - `processing_error`
 - `created_at`
 
-### 3. messages
+### messages
 
-用于保存围绕文档的问答消息历史。
+Purpose:
 
-建议字段：
+- stores document-specific chat history
+
+Current fields:
 
 - `id`
 - `document_id`
@@ -291,63 +241,23 @@ ai-pdf-assistant/
 - `content`
 - `created_at`
 
-### 关系设计
+### Relationships
 
-- 一个 `profile` 对应多个 `documents`
-- 一个 `profile` 对应多个 `messages`
-- 一个 `document` 对应多个 `messages`
+- one `profile` owns many `documents`
+- one `profile` owns many `messages`
+- one `document` owns many `messages`
 
-### 安全约束
+### Access Control
 
-- 所有业务数据都要和 `user_id` 绑定
-- 启用 Supabase Row Level Security
-- 仅允许用户访问 `user_id = auth.uid()` 的记录
-- OpenAI API key 仅允许服务端使用
-- 文件类型和大小校验必须在服务端执行
+- Row Level Security is enabled
+- users can only access their own `profiles`, `documents`, and `messages`
+- Edge Functions still validate document ownership explicitly before acting
 
-## 代码规范
+## 5. Code Standards
 
-### 通用原则
-
-- 优先可读性与可维护性，而不是技巧性写法
-- 一个函数只做一件主要事情
-- 页面文件只负责组合和展示，不承载重业务逻辑
-- Prompt、服务编排、数据库读写必须分层
-
-### 命名规范
-
-- 文件名使用 `kebab-case`
-  - 例如 `document-detail-page.tsx`
-- React 组件使用 `PascalCase`
-  - 例如 `DocumentDetailPage`
-- 函数使用语义明确的动词命名
-  - 例如 `generateSummary`、`getDocumentById`
-- 布尔值使用 `is`、`has`、`can` 前缀
-  - 例如 `isLoading`
-
-### TypeScript 规范
-
-- 对外部可复用函数声明显式参数类型
-- 共享函数和模块导出优先写显式返回类型
-- 避免 `any`
-- 共享类型统一放在 `src/types`
-- API 输入输出应定义独立 payload 类型
-
-### React 规范
-
-- 页面组件保持轻量
-- 大组件及时拆分
-- 本地状态仅用于界面交互
-- 重用已有布局和视觉模式，避免重复实现
-
-### 注释规范
-
-- 只写有维护价值的注释
-- 优先解释模块职责、边界和复杂分支原因
-- 不写重复代码表面含义的注释
-
-### 错误处理规范
-
-- API 返回统一错误结构
-- 区分校验失败、认证失败、权限失败、资源不存在和外部服务失败
-- UI 提示面向用户，不暴露内部堆栈
+- Keep page components focused on composition, not data plumbing
+- Keep backend and service logic out of presentational components
+- Prefer shared route, config, and type definitions over hardcoded values
+- Add comments only where they explain a non-obvious boundary or decision
+- Keep git changes small and documentation synchronized with code
+- Remove dead code instead of leaving abandoned experimental paths in place

@@ -68,6 +68,7 @@ function sanitizeFileName(fileName: string) {
 }
 
 function buildStoragePath(userId: string, documentId: string, fileName: string) {
+  // Path scoping by user and document id keeps storage ownership checks straightforward.
   return `${userId}/${documentId}/${sanitizeFileName(fileName)}`;
 }
 
@@ -136,6 +137,7 @@ export async function uploadUserDocument(
     .single<DocumentRecord>();
 
   if (error || !data) {
+    // Roll back the uploaded file if metadata creation fails so storage and database do not drift apart.
     await supabase.storage.from(DOCUMENTS_BUCKET_NAME).remove([filePath]);
     return {
       document: null,

@@ -96,6 +96,7 @@ export async function sendDocumentMessage(
     | { error?: string; messages?: MessageRecord[] }
     | null;
 
+  // The function returns the server-authoritative message list so the UI stays consistent after persistence.
   if (!response.ok) {
     throw new Error(payload?.error ?? `Document chat request failed with status ${response.status}.`);
   }

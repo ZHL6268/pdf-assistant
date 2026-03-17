@@ -1,89 +1,100 @@
 # PRD
 
-## 产品定位
+## Product Positioning
 
-AI PDF Assistant 是一个轻量级 AI SaaS 应用，面向需要快速理解 PDF 内容的用户。产品目标不是做一个单点演示，而是做出一个具备真实 SaaS 形态的 MVP，覆盖从认证、上传、摘要生成到问答回看的完整闭环。
+AI PDF Assistant is a lightweight AI SaaS application for users who need to understand PDF content quickly.
 
-目标用户主要包括：
+The goal is not to ship a one-off demo. The goal is to build a real MVP with a complete product loop:
 
-- 学生和研究人员
-  - 需要快速理解论文、报告和学习材料
-- 知识型工作者
-  - 需要快速提取商业文档、操作手册和内部资料中的关键内容
-- 创业者与产品负责人
-  - 需要一个可直接体现 AI 产品价值的文档助手
+- authentication
+- PDF upload
+- summary generation
+- document-level chat
+- history review
 
-产品的核心价值：
+Primary target users:
 
-- 降低用户阅读长文档的时间成本
-- 提供围绕单一文档的结构化 AI 能力
-- 形成可持续演进的 SaaS 产品基础
+- Students and researchers
+  - need to digest papers, reports, and study material quickly
+- Knowledge workers
+  - need to extract key information from business documents, manuals, and internal files
+- Founders and product operators
+  - need a product that demonstrates practical AI value clearly
 
-## 核心功能列表
+Core product value:
 
-MVP 范围内的核心功能如下：
+- reduce the time cost of reading long documents
+- provide structured AI capabilities around a single document
+- create a maintainable SaaS foundation that can evolve into a broader product
 
-1. 用户认证
-   - 用户注册、登录、登出
-   - 会话保持
-   - 受保护页面访问控制
+## Core Feature List
 
-2. PDF 上传
-   - 单文件上传
-   - PDF 类型校验
-   - 文件大小限制
+The MVP includes:
 
-3. 文档仪表盘
-   - 展示用户上传的文档列表
-   - 展示上传时间、处理状态、摘要状态
+1. User authentication
+   - sign up
+   - sign in
+   - sign out
+   - session persistence
+   - protected page access control
 
-4. AI 摘要生成
-   - 基于文档提取文本生成结构化摘要
-   - 摘要结果持久化保存
+2. PDF upload
+   - single-file upload
+   - PDF type validation
+   - file size limits
 
-5. 文档问答
-   - 针对单个文档进行上下文问答
-   - 回复基于该文档内容而非全局知识
+3. Document dashboard
+   - list user documents
+   - show upload time
+   - show processing and summary status
 
-6. 历史记录
-   - 保存摘要结果
-   - 保存对话历史
-   - 支持回访用户已处理过的文档
+4. AI summary generation
+   - generate a structured summary from the uploaded document
+   - persist the summary result
 
-MVP 明确不包含以下内容：
+5. Document chat
+   - ask contextual questions about a single document
+   - return answers grounded in that document instead of general knowledge
 
-- OCR 扫描件识别
-- 多文档联合检索
-- 团队协作和多租户工作区
-- 支付、订阅和计费
-- 高级模型切换和自定义 Prompt
-- 复杂检索增强和向量数据库优化
+6. History
+   - persist summaries
+   - persist chat history
+   - allow users to revisit processed documents later
 
-## 用户使用流程
+The MVP explicitly excludes:
 
-用户主流程如下：
+- OCR for scanned PDFs
+- multi-document retrieval
+- team collaboration and multi-tenant workspaces
+- payments, subscriptions, and billing
+- advanced model switching and custom prompt builders
+- complex retrieval augmentation and vector database optimization
 
-1. 用户进入 landing page
-2. 用户注册或登录
-3. 用户进入受保护的 dashboard
-4. 用户上传 PDF
-5. 系统完成文件校验、存储和文本提取
-6. 文档出现在 dashboard 列表中
-7. 用户进入 document detail 页面
-8. 用户生成摘要并查看摘要结果
-9. 用户提出与该文档相关的问题
-10. 系统返回 grounded answer 并保存对话历史
-11. 用户后续可再次进入该文档查看摘要和聊天记录
+## User Flow
 
-页面范围包括：
+Main user flow:
+
+1. The user lands on the landing page
+2. The user signs up or signs in
+3. The user enters the protected dashboard
+4. The user uploads a PDF
+5. The system validates, stores, and processes the file
+6. The document appears in the dashboard list
+7. The user opens the document detail page
+8. The user reviews the generated summary
+9. The user asks document-specific questions
+10. The system returns grounded answers and stores the conversation
+11. The user can return later to review the same summary and message history
+
+Current page map:
 
 - `/`
-  - Landing page
+  - landing page
 - `/login`
-  - 登录页
+  - login page
 - `/signup`
-  - 注册页
+  - signup page
 - `/dashboard`
-  - 文档仪表盘
+  - document dashboard
 - `/documents/[id]`
-  - 文档详情页，包含摘要与聊天区域
+  - document detail page with summary and chat

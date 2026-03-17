@@ -18,6 +18,8 @@ export function useDocumentLibrary() {
 
   const syncActiveDocumentId = useCallback((nextDocuments: StoredDocument[]) => {
     const storedActiveDocumentId = readActiveDocumentId();
+    // Keep the active document stable across dashboard/detail transitions, but fall back gracefully
+    // when the stored id no longer exists in the latest backend result set.
     const nextActiveDocumentId =
       (storedActiveDocumentId &&
       nextDocuments.some((document) => document.id === storedActiveDocumentId)
@@ -109,6 +111,7 @@ export function useDocumentLibrary() {
       setUploadError(null);
       setUploadSuccessMessage(`${result.document.name} uploaded successfully. Summary generation has started.`);
 
+      // Re-read the library after processing so the dashboard reflects the latest summary status from the backend.
       const processingResult = await processUserDocument(supabase, result.document.id);
       const nextDocuments = await listUserDocuments(supabase);
       setDocuments(nextDocuments);

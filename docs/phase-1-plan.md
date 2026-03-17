@@ -1,52 +1,52 @@
 # Phase 1 Plan
 
-## 目标
+## Goal
 
-第一阶段只处理工程基线，不实现真实业务能力。目标是让项目具备可持续实现的基础约束，并让文档、代码结构、共享类型和 git 节奏保持同步。
+Phase 1 focused on the engineering baseline only. It did not implement real business capability. The objective was to create sustainable project constraints and keep documentation, code structure, shared types, and git workflow aligned.
 
-## 范围
+## Scope
 
-1. 补齐共享工程基础
-   - 路由定义
-   - 环境变量约定
-   - 常量定义
-   - API 占位类型
-   - 错误结构约定
+1. Establish shared engineering foundations
+   - route definitions
+   - environment variable conventions
+   - app constants
+   - API placeholder types
+   - common error shape conventions
 
-2. 减少页面级硬编码
-   - 让现有前端页面依赖共享配置和常量
-   - 为后续真实路由和服务接入预留清晰边界
+2. Reduce page-level hardcoding
+   - move key values out of page components
+   - leave clear boundaries for future routing and service integration
 
-3. 保持文档同步
-   - README 反映当前工程状态
-   - PRD 反映产品目标
-   - Architecture 反映当前结构和目标架构
-   - 本文档记录当前阶段实施范围
+3. Keep documents in sync
+   - README reflects current project state
+   - PRD reflects product goals
+   - Architecture reflects current and target structure
+   - this phase document records the implementation boundary
 
-## 交付项
+## Deliverables
 
 - `src/config/routes.ts`
 - `src/config/env.ts`
 - `src/constants/app.ts`
 - `src/types/api.ts`
-- 原始 UI 接入关键共享常量
-- `.env.example` 更新为当前项目约定
+- the original UI wired to key shared constants
+- `.env.example` updated to match current conventions
 
-## 当前状态备注
+## Current Status Note
 
-第一阶段的共享基础已完成，但在后续清洁过程中已删除未被运行入口使用的实验性 UI 模块和工具文件，避免仓库继续累积死代码。
+The shared baseline was completed in Phase 1. Some experimental UI modules and utility files were removed later during cleanup so the repository would not keep accumulating dead code.
 
-## 非目标
+## Non-Goals
 
-- 不接入 Supabase
-- 不接入 OpenAI
-- 不实现真实文件上传
-- 不实现真实 API
-- 不迁移到 Next.js
+- no Supabase integration
+- no OpenAI integration
+- no real file upload
+- no real API implementation
+- no Next.js migration
 
-## 完成标准
+## Done Criteria
 
-- 当前 UI 不再硬编码关键产品名称、上传约束和核心路径
-- 环境变量命名与未来架构方向一致
-- API 边界具备统一类型占位
-- 项目文档和代码状态一致
+- the UI no longer hardcodes key product labels, upload constraints, and core paths
+- environment variable naming matches the future architecture direction
+- API boundaries have a shared placeholder typing layer
+- project documentation matches the actual code state

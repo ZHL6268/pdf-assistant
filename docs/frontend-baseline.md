@@ -1,101 +1,76 @@
 # Frontend Baseline
 
-This document captures how the current frontend has been aligned to the supplied PRD/TDD while the project gradually replaces fake frontend workflows with real Supabase-backed infrastructure.
+This document explains how the frontend has been aligned to the supplied PRD/TDD while fake workflows were progressively replaced by real Supabase-backed infrastructure.
 
 ## Interpretation
 
-- Keep the existing repository and tech stack intact for now.
-- Use the documented MVP page map as the source of truth for UI structure.
-- Preserve the original visual baseline while moving real integrations behind clear service boundaries.
-- Reshape the frontend so later implementation can proceed page by page and module by module.
+- Keep the existing repository and stack intact during the MVP build-out
+- Use the documented MVP page map as the source of truth
+- Preserve the original visual baseline while moving real behavior behind clear service boundaries
+- Reshape the frontend so future work can continue page by page and module by module
 
-## Current UI baseline
+## Current UI Baseline
 
-- The active UI shell still preserves the original visual baseline
+- The active UI still preserves the original visual language
 - `src/App.tsx` now acts as an application shell instead of owning all business logic
-- Real auth and document services now sit behind dedicated provider, hook, and service layers
+- Real auth, document services, summaries, and document chat now sit behind dedicated provider, hook, and service layers
 
-## Engineering adjustments
+## Engineering Adjustments
 
-- API boundary placeholders added under `src/types/api.ts`
-- Route and environment conventions added under `src/config`
-- App-wide constants added under `src/constants`
-- Formal routing now runs through `react-router-dom`
-- Real auth now runs through Supabase via `src/providers/auth-session-provider.tsx`
-- Real document upload/listing now runs through `src/services/document-service.ts`
+- shared route and environment conventions live under `src/config`
+- app-wide constants live under `src/constants`
+- real auth runs through Supabase via `src/providers/auth-session-provider.tsx`
+- real document upload and listing run through `src/services/document-service.ts`
+- real message history and document chat run through `src/services/message-service.ts`
 - `src/index.css` remains minimal so the original Tailwind utility layout renders unchanged
 
-## Explicit non-goals
+## Explicit Non-Goals
 
-- No vector retrieval yet
+- no vector retrieval yet
+- no multi-document search yet
+- no collaborative workspace features yet
 
-## Phase 2 Completion
+## Phase Status
 
-Phase 2 app-shell cleanup is complete:
+### Phase 2 Complete
 
-- preserve the original single-file visual baseline
-- keep shared engineering foundations in separate modules
-- remove dead UI modules left over from earlier refactors
-- drive page transitions from shared route configuration
-- avoid dead-end placeholder `#` navigation in the live shell
-- keep browser document titles aligned with the active screen
-- add local auth session state and protected-page guards without changing the layout
-- support both login and signup entry points with post-auth redirect intent
-- move dashboard/detail demo content into dedicated state modules
-- split page templates and reusable display blocks out of `App.tsx` while preserving the same UI
-- centralize screen flow, auth redirect, and shell actions into a dedicated app-flow hook
-- expose dashboard/detail display data through dedicated view-model hooks instead of direct state imports
-- expose user-facing profile text through a dedicated profile view-model instead of passing raw auth user data through the shell
-- move demo auth-session persistence and session construction behind dedicated service modules
+- removed the temporary custom navigation layer
+- moved route protection and post-auth redirect handling into `react-router-dom`
+- moved page templates and reusable display blocks out of `App.tsx`
+- centralized state and view-model boundaries for dashboard, detail, and user profile display
 
-Router cleanup completed after Phase 6:
+### Phase 3 Complete
 
-- the temporary custom `history + screen` navigation layer has been removed
-- route protection and auth redirect intent now live in `react-router-dom`
-- document detail now uses a dynamic route segment instead of a hard-coded demo path
+- dashboard upload opens a real local file picker
+- file type and file size validation are enforced in the UI
+- active document continuity exists between dashboard and detail
 
-## Phase 3 Completion
+### Phase 4 Complete
 
-Phase 3 document-management frontend MVP is complete:
-
-- make the dashboard upload CTA open a real local file picker
-- validate selected files against PDF type and file-size limits
-- persist uploaded document metadata into a local document library
-- synchronize the active document between dashboard and detail page
-- keep the browser title aligned with the active document while on detail
-- keep the existing visual baseline unchanged while making the workflow testable
-
-## Current Phase Status
-
-Phase 4 is complete:
-
-- local fake auth has been replaced by Supabase Auth session handling
+- local fake auth was replaced with Supabase Auth session handling
 - auth state is centralized in a shared provider
-- the project now includes a first database migration for `profiles`, `documents`, and `messages`
-- missing-environment and auth failure states are surfaced clearly in the UI
+- the project now includes baseline schema and RLS for `profiles`, `documents`, and `messages`
 
-Phase 5 is complete:
+### Phase 5 Complete
 
-- the local document library has been replaced by real `documents` table reads
-- PDF uploads are routed to Supabase Storage
-- a second migration now provisions the `documents` storage bucket and policies
-- dashboard reads and uploads now use real backend data
+- the local document library was replaced with real `documents` table reads
+- PDF uploads now go to Supabase Storage
+- dashboard reads and uploads use real backend data
 
-Phase 6 is complete:
+### Phase 6 Complete
 
-- a Supabase Edge Function now owns PDF text extraction and summary generation
+- a Supabase Edge Function owns summary generation
 - uploads move through real `uploaded / processing / complete / failed` states
-- document detail now prefers real `summary` data from the database
+- document detail prefers real `summary` data from the database
 
-Phase 7 is in progress:
+### Phase 7 Complete
 
-- detail chat now loads real `messages` history per document
-- a dedicated Edge Function now answers grounded single-document questions
-- question / answer pairs are persisted to `messages`
-- insight cards still remain demo content
+- document detail chat loads real `messages` history per document
+- a dedicated Edge Function answers grounded single-document questions
+- question and answer pairs are persisted to `messages`
 
-Phase 8 is in progress:
+### Phase 8 In Progress
 
 - non-functional CTA surfaces are being converted into explicit read-only states
-- auth form demo defaults are removed to reduce testing noise
+- auth form demo defaults have been removed to reduce testing noise
 - remaining demo scaffolding is being trimmed where it no longer helps maintenance
