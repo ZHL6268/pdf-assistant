@@ -7,23 +7,43 @@ interface ProfileRecord {
   full_name: string | null;
 }
 
+const PROFILE_FETCH_TIMEOUT_MS = 5000;
+
 export async function fetchUserProfile(
   supabase: SupabaseClient,
   fallbackUser: AuthUser,
 ): Promise<AuthUser> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, email, full_name')
-    .eq('id', fallbackUser.id)
-    .single<ProfileRecord>();
+  let timeoutId: number | null = null;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(new Error('Profile lookup timed out.'));
+    }, PROFILE_FETCH_TIMEOUT_MS);
+  });
 
-  if (error || !data) {
+  try {
+    const { data, error } = await Promise.race([
+      supabase
+        .from('profiles')
+        .select('id, email, full_name')
+        .eq('id', fallbackUser.id)
+        .maybeSingle<ProfileRecord>(),
+      timeoutPromise,
+    ]);
+
+    if (error || !data) {
+      return fallbackUser;
+    }
+
+    return {
+      id: data.id,
+      email: data.email,
+      fullName: data.full_name || fallbackUser.fullName,
+    };
+  } catch {
     return fallbackUser;
+  } finally {
+    if (timeoutId !== null) {
+      window.clearTimeout(timeoutId);
+    }
   }
-
-  return {
-    id: data.id,
-    email: data.email,
-    fullName: data.full_name || fallbackUser.fullName,
-  };
 }

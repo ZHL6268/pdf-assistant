@@ -79,6 +79,10 @@ async function hydrateAppSession(session: Session | null, supabase: ReturnType<t
   return { user: profileBackedUser };
 }
 
+function getFallbackAppSession(session: Session | null) {
+  return mapSession(session);
+}
+
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -107,7 +111,19 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
           setAuthError(error.message);
           setSession(null);
         } else {
-          setSession(await hydrateAppSession(data.session, supabase));
+          const fallbackSession = getFallbackAppSession(data.session);
+          setSession(fallbackSession);
+          hydrateAppSession(data.session, supabase)
+            .then((hydratedSession) => {
+              if (isMounted) {
+                setSession(hydratedSession ?? fallbackSession);
+              }
+            })
+            .catch(() => {
+              if (isMounted) {
+                setSession(fallbackSession);
+              }
+            });
         }
 
         setIsAuthReady(true);
@@ -121,8 +137,17 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
         setIsAuthReady(true);
       });
 
-    const { data } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
-      setSession(await hydrateAppSession(nextSession, supabase));
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      const fallbackSession = getFallbackAppSession(nextSession);
+      setSession(fallbackSession);
+
+      void hydrateAppSession(nextSession, supabase)
+        .then((hydratedSession) => {
+          setSession(hydratedSession ?? fallbackSession);
+        })
+        .catch(() => {
+          setSession(fallbackSession);
+        });
 
       setIsAuthReady(true);
     });
@@ -163,7 +188,15 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
             return { success: false, hasSession: false };
           }
 
-          setSession(await hydrateAppSession(data.session, supabase));
+          const fallbackSession = getFallbackAppSession(data.session);
+          setSession(fallbackSession);
+          void hydrateAppSession(data.session, supabase)
+            .then((hydratedSession) => {
+              setSession(hydratedSession ?? fallbackSession);
+            })
+            .catch(() => {
+              setSession(fallbackSession);
+            });
           return { success: true, hasSession: Boolean(data.session) };
         } catch (error) {
           setAuthError(error instanceof Error ? error.message : 'Login failed.');
@@ -197,7 +230,15 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
             return { success: false, hasSession: false };
           }
 
-          setSession(await hydrateAppSession(data.session, supabase));
+          const fallbackSession = getFallbackAppSession(data.session);
+          setSession(fallbackSession);
+          void hydrateAppSession(data.session, supabase)
+            .then((hydratedSession) => {
+              setSession(hydratedSession ?? fallbackSession);
+            })
+            .catch(() => {
+              setSession(fallbackSession);
+            });
           if (!data.session) {
             setAuthNotice('Account created. If email confirmation is enabled, confirm your email before signing in.');
           }
