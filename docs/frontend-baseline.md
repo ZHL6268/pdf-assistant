@@ -93,3 +93,9 @@ Phase 7 is in progress:
 - a dedicated Edge Function now answers grounded single-document questions
 - question / answer pairs are persisted to `messages`
 - insight cards still remain demo content
+
+Phase 8 is in progress:
+
+- non-functional CTA surfaces are being converted into explicit read-only states
+- auth form demo defaults are removed to reduce testing noise
+- remaining demo scaffolding is being trimmed where it no longer helps maintenance

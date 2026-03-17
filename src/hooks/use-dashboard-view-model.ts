@@ -1,4 +1,4 @@
-import { dashboardState } from '../state/demo-state';
+import { dashboardGreeting } from '../state/demo-state';
 import { useDocumentLibrary } from './use-document-library';
 
 export interface DashboardViewModel {
@@ -24,7 +24,7 @@ export function useDashboardViewModel(): DashboardViewModel {
   } = useDocumentLibrary();
 
   return {
-    greeting: dashboardState.greeting,
+    greeting: dashboardGreeting,
     documents,
     isLibraryLoading,
     isUploadingDocument,

@@ -7,9 +7,5 @@ export function PlaceholderButton({
   children: ReactNode;
   className: string;
 }) {
-  return (
-    <button className={className} type="button">
-      {children}
-    </button>
-  );
+  return <span className={className}>{children}</span>;
 }

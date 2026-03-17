@@ -1,7 +1,6 @@
 import { Fragment, useRef } from 'react';
 import { Bell, CloudUpload, FileText, FolderOpen, LayoutDashboard, LogOut, Search, Settings } from 'lucide-react';
 import { DocRow } from '../components/doc-row';
-import { PlaceholderButton } from '../components/placeholder-button';
 import { appRoutes } from '../config/routes';
 import { MAX_UPLOAD_SIZE_MB } from '../constants/app';
 import { useDashboardViewModel } from '../hooks/use-dashboard-view-model';
@@ -47,10 +46,10 @@ export function DashboardPage({
             <FolderOpen size={20} />
             My Documents
           </button>
-          <PlaceholderButton className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+          <span className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-slate-400">
             <Settings size={20} />
             Settings
-          </PlaceholderButton>
+          </span>
           <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-red-600 hover:bg-red-50 transition-colors mt-4" type="button">
             <LogOut size={20} />
             Logout
@@ -72,11 +71,11 @@ export function DashboardPage({
           <div className="flex items-center flex-1 max-w-md">
             <div className="relative w-full">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input className="w-full bg-slate-100 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-[#0d33f2]" placeholder="Search documents..." type="text" />
+              <input className="w-full bg-slate-100 border-none rounded-lg pl-10 pr-4 py-2 text-sm text-slate-400" placeholder="Search coming soon" type="text" readOnly aria-label="Search coming soon" />
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full relative" type="button">
+            <button className="p-2 text-slate-400 rounded-full relative cursor-not-allowed" type="button" disabled>
               <Bell size={20} />
               <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
@@ -142,9 +141,7 @@ export function DashboardPage({
             <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                 <h3 className="font-bold text-slate-900">Recent Documents</h3>
-                <button className="text-sm font-semibold text-[#0d33f2] hover:underline" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} type="button">
-                  View All
-                </button>
+                <span className="text-sm font-semibold text-slate-400">Newest first</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">

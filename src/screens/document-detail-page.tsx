@@ -62,13 +62,13 @@ export function DocumentDetailPage({
         </div>
         <div className="flex flex-1 justify-end gap-3 items-center">
           <div className="flex gap-2">
-            <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors" type="button">
+            <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-400 cursor-not-allowed" type="button" disabled>
               <Download size={20} />
             </button>
-            <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors" type="button">
+            <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-400 cursor-not-allowed" type="button" disabled>
               <Share2 size={20} />
             </button>
-            <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors" type="button">
+            <button className="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 text-slate-400 cursor-not-allowed" type="button" disabled>
               <Settings size={20} />
             </button>
           </div>
@@ -95,7 +95,7 @@ export function DocumentDetailPage({
               <FileSearch size={16} />
               Key Insights
             </button>
-            <button className="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2 transition-colors" type="button">
+            <button className="px-6 py-3 text-sm font-medium text-slate-400 flex items-center gap-2 cursor-not-allowed" type="button" disabled>
               <Eye size={16} />
               PDF Preview
             </button>
@@ -135,9 +135,9 @@ export function DocumentDetailPage({
               <div className="absolute inset-0 opacity-10 bg-center bg-cover" style={{ backgroundImage: "url('https://picsum.photos/seed/pdf-bg/1200/800')" }}></div>
               <div className="relative z-10 flex flex-col items-center gap-4">
                 <FileText size={64} className="text-slate-400" />
-                <button className="bg-white text-slate-900 px-6 py-2.5 rounded-lg font-bold text-sm shadow-xl hover:scale-105 transition-transform" type="button">
-                  Open Full Preview
-                </button>
+                <span className="bg-white text-slate-500 px-6 py-2.5 rounded-lg font-bold text-sm shadow-xl">
+                  Preview Coming Soon
+                </span>
               </div>
             </div>
           </div>
@@ -206,9 +206,9 @@ export function DocumentDetailPage({
                 </button>
               </div>
               {isSendingMessage ? <p className="text-xs text-slate-500">Generating answer...</p> : null}
-              <button className="w-full bg-slate-900 text-white py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity" type="button">
+              <button className="w-full bg-slate-900/60 text-white py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 cursor-not-allowed" type="button" disabled>
                 <FileSearch size={16} />
-                Generate Detailed Report
+                Detailed Report Coming Soon
               </button>
             </div>
           </div>

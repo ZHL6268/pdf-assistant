@@ -1,7 +1,6 @@
 import { Eye, FileText } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { PlaceholderButton } from '../components/placeholder-button';
 import { APP_NAME } from '../constants/app';
 import type { LoginInput } from '../types/auth';
 
@@ -24,6 +23,7 @@ export function AuthPage({
 }) {
   const isSignup = mode === 'signup';
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-slate-900 font-sans flex flex-col">
@@ -32,9 +32,9 @@ export function AuthPage({
           <FileText size={32} />
           <h2 className="text-slate-900 text-lg font-bold leading-tight tracking-tight">{APP_NAME}</h2>
         </div>
-        <button className="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#0d33f2]/10 text-[#0d33f2] text-sm font-bold hover:bg-[#0d33f2]/20 transition-colors" type="button">
-          <span>Help</span>
-        </button>
+        <span className="flex min-w-[84px] items-center justify-center rounded-lg h-10 px-4 bg-[#0d33f2]/10 text-[#0d33f2] text-sm font-bold">
+          Help Center
+        </span>
       </header>
 
       <main className="flex-1 flex items-center justify-center p-4">
@@ -53,7 +53,7 @@ export function AuthPage({
           </div>
 
           <div className="space-y-4">
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 transition-all" type="button">
+            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-400 cursor-not-allowed" type="button" disabled>
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
@@ -62,6 +62,7 @@ export function AuthPage({
               </svg>
               <span className="text-slate-700 font-medium">{isSignup ? 'Sign up with Google' : 'Sign in with Google'}</span>
             </button>
+            <p className="text-xs text-slate-500 text-center">Google sign-in is not enabled in this environment.</p>
 
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
@@ -91,22 +92,22 @@ export function AuthPage({
             >
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Email address</label>
-                <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="name@company.com" type="email" name="email" defaultValue="alex@company.com" required />
+                <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="name@company.com" type="email" name="email" autoComplete="email" required />
               </div>
               {isSignup ? (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700">Full name</label>
-                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Alex Rivera" type="text" name="fullName" defaultValue="Alex Rivera" required />
+                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Alex Rivera" type="text" name="fullName" autoComplete="name" required />
                 </div>
               ) : null}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-slate-700">Password</label>
-                  <PlaceholderButton className="text-xs font-semibold text-[#0d33f2] hover:underline">Forgot password?</PlaceholderButton>
+                  <span className="text-xs font-semibold text-slate-400">Reset flow coming soon</span>
                 </div>
                 <div className="relative">
-                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Enter your password" type="password" name="password" defaultValue="demo-password" required />
-                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" type="button">
+                  <input className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-[#0d33f2]/20 focus:border-[#0d33f2] transition-all outline-none" placeholder="Enter your password" type={showPassword ? 'text' : 'password'} name="password" autoComplete={isSignup ? 'new-password' : 'current-password'} required />
+                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" type="button" onClick={() => setShowPassword((current) => !current)}>
                     <Eye size={20} />
                   </button>
                 </div>
@@ -144,9 +145,9 @@ export function AuthPage({
         <p className="text-slate-400 text-xs">
           © 2024 {APP_NAME}. All rights reserved.
           <span className="mx-2">|</span>
-          <PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Privacy Policy</PlaceholderButton>
+          <span>Privacy Policy</span>
           <span className="mx-2">|</span>
-          <PlaceholderButton className="hover:text-[#0d33f2] transition-colors">Terms of Service</PlaceholderButton>
+          <span>Terms of Service</span>
         </p>
       </footer>
     </div>
